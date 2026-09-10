@@ -1,0 +1,184 @@
+/* ============================================================
+   E-Katalog — Dark Mode
+   Diterapkan saat <html data-bs-theme="dark"> dan body.ek-dark
+   ============================================================ */
+
+body.ek-dark {
+	background-color: #111418;
+	color: #e6e6e6;
+}
+
+body.ek-dark .ek-product {
+	background-color: #1b2026;
+}
+
+body.ek-dark .ek-product-title { color: #e6e6e6; }
+
+body.ek-dark .ek-product-company,
+body.ek-dark .ek-product-rating { color: #9aa0a6; }
+
+body.ek-dark .ek-filter-bar,
+body.ek-dark .card,
+body.ek-dark .card-header {
+	background-color: #1b2026;
+	border-color: #2a2f36;
+	color: #e6e6e6;
+}
+
+body.ek-dark .table {
+	color: #e6e6e6;
+	--bs-table-bg: transparent;
+	--bs-table-hover-bg: #232a31;
+}
+
+body.ek-dark .table thead th { color: #b6bec6; }
+
+body.ek-dark .breadcrumb-item a { color: #8fd9a4; }
+
+body.ek-dark .breadcrumb-item.active { color: #9aa0a6; }
+
+body.ek-dark .ek-gallery-main {
+	background-color: #1b2026;
+	border-color: #2a2f36;
+}
+
+body.ek-dark .ek-thumb { border-color: #333a42; }
+
+body.ek-dark .ek-product-oldprice { color: #7d858d; }
+
+body.ek-dark .text-muted { color: #9aa0a6 !important; }
+
+body.ek-dark .ek-fav-btn { background: rgba(27, 32, 38, .92); }
+
+body.ek-dark .form-control,
+body.ek-dark .form-select {
+	background-color: #22282f;
+	border-color: #3a424b;
+	color: #e6e6e6;
+}
+
+body.ek-dark .form-control:focus {
+	background-color: #22282f;
+	color: #e6e6e6;
+}
+
+body.ek-dark .border,
+body.ek-dark .border-top,
+body.ek-dark .border-bottom { border-color: #2a2f36 !important; }
+
+body.ek-dark .ek-nav-user .dropdown-menu {
+	background-color: #1b2026;
+}
+
+body.ek-dark .ek-nav-user .dropdown-item { color: #e6e6e6; }
+
+body.ek-dark .ek-nav-user .dropdown-item:hover {
+	background-color: #232a31;
+	color: #e6e6e6;
+}
+
+body.ek-dark .ek-nav-user .dropdown-item.text-danger:hover {
+	background-color: #3a2020;
+	color: #ff8a80 !important;
+}
+
+body.ek-dark .ek-nav-user .dropdown-item-text.text-muted { color: #9aa0a6 !important; }
+
+body.ek-dark .ek-nav-user .dropdown-divider { border-color: #2a2f36; }
+
+body.ek-dark .ek-market-logo { background: #2a2f36; border-color: #3a4149; }
+body.ek-dark .ek-market-logo:hover { background: #333a42; border-color: #4a525b; }
+
+body.ek-dark .ek-category-strip,
+body.ek-dark .ek-cat-item {
+	background-color: #1b2026;
+	border-color: #2a2f36;
+	color: #e6e6e6;
+}
+
+body.ek-dark .ek-cat-item:hover {
+	border-color: #4f9e5e;
+	color: #8fd9a4;
+}
+
+body.ek-dark .ek-cat-item.active {
+	background: var(--ek-green);
+	border-color: var(--ek-green);
+	color: #fff;
+}
+
+body.ek-dark .ek-cat-arrow {
+	background-color: #22282f;
+	border-color: #3a424b;
+	color: #e6e6e6;
+}
+
+body.ek-dark .ek-cat-arrow:hover {
+	border-color: #4f9e5e;
+	color: #8fd9a4;
+}
+
+body.ek-dark .ek-cat-nav::-webkit-scrollbar-thumb { background: #3a424b; }
+
+body.ek-dark .ek-scroll-row::-webkit-scrollbar-thumb { background: #3a424b; }
+
+body.ek-dark .ek-cv-logo { background-color: #1b2026; }
+
+body.ek-dark .ek-card.modal-content { background-color: #1b2026; color: #e6e6e6; border-color: #2a2f36; }
+
+body.ek-dark .ek-card.modal-content .modal-header { border-color: #2a2f36; }
+
+body.ek-dark .ek-card.modal-content .btn-close { filter: invert(1); }
+
+body.ek-dark .ek-topbar {
+	background: #111418;
+	border-color: #2a2f36;
+}
+
+body.ek-dark .ek-logo-img {
+	filter: brightness(0) invert(1);
+}
+
+body.ek-dark .ek-navlink { color: #e6e6e6; }
+
+body.ek-dark .ek-navlink:hover { background: #232a31; color: #fff; }
+
+body.ek-dark .ek-navlink-active,
+body.ek-dark .ek-navlink-active:hover { color: #5aa9ff; }
+
+body.ek-dark .ek-navlink-active:hover { background: #232a31; }
+
+body.ek-dark .ek-btn-login { background: #111418; color: #e6e6e6; }
+
+body.ek-dark .ek-btn-login:hover { background: #232a31; color: #fff; }
+
+body.ek-dark .ek-btn-login-active,
+body.ek-dark .ek-btn-login-active:hover { color: #5aa9ff; }
+
+body.ek-dark .ek-btn-login-active:hover { background: #232a31; color: #6cb3ff; }
+
+body.ek-dark .ek-btn-logout {
+	color: #e6e6e6;
+	border-color: #3a424b;
+}
+
+body.ek-dark .ek-btn-logout:hover { background: #232a31; color: #fff; }
+
+body.ek-dark .ek-nav-avatar { border-color: #3a424b; }
+
+body.ek-dark .ek-nav-avatar-btn:hover .ek-nav-avatar {
+	border-color: #4a525b;
+	box-shadow: 0 0 0 3px rgba(255, 255, 255, .15);
+}
+
+body.ek-dark .ek-btn-search {
+	background: #22282f;
+	color: #e6e6e6;
+	border-color: #3a424b;
+}
+
+body.ek-dark .ek-btn-search:hover {
+	background: #232a31;
+	color: #fff;
+	border-color: #c4c4c4;
+}

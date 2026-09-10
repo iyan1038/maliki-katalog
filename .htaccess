@@ -1,0 +1,22 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Jangan rewrite existing file/dir
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Redirect semua ke index.php (relatif, bekerja di subfolder/root)
+    RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
+
+# Blokir akses langsung ke folder aplikasi & framework (di posisi apa pun)
+RedirectMatch 403 ^/(.*/)?(application|system|vendor)($|/)
+
+# Blokir file sensitif
+<FilesMatch "^(\.htaccess|\.gitignore|database\.sql|database_dev.*\.sql|composer\.(json|lock)|\.env)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Nonaktifkan listing direktori
+Options -Indexes

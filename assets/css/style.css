@@ -1,0 +1,599 @@
+/* ============================================================
+   E-Katalog — Tokopedia-style theme
+   ============================================================ */
+
+:root {
+	--ek-green: #0b7af8;
+	--ek-green-dark: #0b5fbe;
+	--ek-red: #ee4d2d;
+	--ek-price: #03ac0e;
+	--ek-bg: #f5f6f8;
+}
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	background-color: var(--ek-bg);
+	color: #222;
+}
+
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* ---------- Topbar ---------- */
+.ek-topbar {
+	background: #fff;
+	border-bottom: 1px solid #eee;
+}
+
+.ek-logo {
+	text-decoration: none;
+	display: inline-block;
+	line-height: 0;
+}
+
+.ek-logo-img {
+	height: 50px;
+	width: auto;
+	display: block;
+}
+
+.ek-header-search { flex: 1 1 auto; min-width: 0; }
+
+.ek-search { position: relative; }
+
+.ek-search .form-control {
+	border: 0;
+	border-radius: 6px;
+	padding: .55rem 1rem;
+	font-size: 1rem;
+	border: 1px  solid #000000;
+
+}
+
+.ek-btn-search {
+	background: #fff;
+	color: var(#000000);
+	font-weight: 600;
+	border: 0;
+	border-radius: 6px;
+	white-space: nowrap;
+	border: 1px  solid #000000;
+
+}
+
+.ek-btn-search:hover { background: #f2f2f2; color: var(--ek-green-dark); 	border: 1px  solid #727272;
+}
+
+.ek-navlink {
+	color: #222;
+	font-weight: 600;
+	text-decoration: none;
+	font-size: .9rem;
+	padding: .25rem .5rem;
+	border-radius: 6px;
+}
+
+.ek-navlink:hover {
+	background: #f2f2f2;
+	color: #000;
+	text-decoration: none;
+}
+
+.ek-navlink-active,
+.ek-navlink-active:hover { color: var(--ek-green); }
+
+.ek-navlink-active:hover {
+	background: #f2f2f2;
+	text-decoration: none;
+}
+
+.ek-badge-role {
+	background: rgba(255, 255, 255, .25);
+	color: #fff;
+	font-size: .72rem;
+	font-weight: 600;
+	padding: .15rem .5rem;
+	border-radius: 999px;
+}
+
+.ek-btn-login {
+	background: #fff;
+	color: #222;
+	font-weight: 700;
+	border-radius: 6px;
+}
+
+.ek-btn-login:hover { background: #f2f2f2; color: #000; }
+
+.ek-btn-login-active,
+.ek-btn-login-active:hover { color: var(--ek-green); }
+
+.ek-btn-login-active:hover { background: #f2f2f2; color: var(--ek-green-dark); }
+
+.ek-btn-logout {
+	background: transparent;
+	color: #555;
+	border: 1px solid #999;
+	border-radius: 6px;
+}
+
+.ek-btn-logout:hover { background: #eee; color: #222; }
+
+/* ---------- Banner ---------- */
+.ek-banner {
+	width: 100%;
+	height: auto;
+	max-height: 220px;
+	object-fit: cover;
+	border-radius: 8px;
+}
+
+/* ---------- Filter bar ---------- */
+.ek-filter-bar {
+	background: #fff;
+	border-radius: 8px;
+	padding: .75rem 1rem;
+	border: 1px solid #eef0f2;
+}
+
+/* ---------- Kategori (scrollable horizontal) ---------- */
+.ek-category-strip {
+	background: #fff;
+	border-radius: 8px;
+	border: 1px solid #eef0f2;
+	padding: .5rem .25rem;
+}
+
+.ek-category-wrap { position: relative; }
+
+.ek-cat-nav {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	scroll-behavior: smooth;
+	gap: .5rem;
+	padding: .25rem 2.5rem;
+	scrollbar-width: thin;
+}
+
+.ek-cat-nav::-webkit-scrollbar { height: 4px; }
+
+.ek-cat-nav::-webkit-scrollbar-thumb { background: #d3d7db; border-radius: 999px; }
+
+.ek-cat-item {
+	flex: 0 0 auto;
+	padding: .4rem 1rem;
+	border: 1px solid #e3e6e8;
+	border-radius: 999px;
+	font-size: .85rem;
+	font-weight: 600;
+	color: #333;
+	text-decoration: none;
+	white-space: nowrap;
+	background: #fff;
+	transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+}
+
+.ek-cat-item:hover {
+	border-color: var(--ek-green);
+	color: var(--ek-green-dark);
+}
+
+.ek-cat-item.active {
+	background: var(--ek-green);
+	border-color: var(--ek-green);
+	color: #fff;
+}
+
+.ek-cat-arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 32px;
+	height: 32px;
+	border: 1px solid #e3e6e8;
+	border-radius: 50%;
+	background: #fff;
+	color: #333;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	z-index: 2;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+	cursor: pointer;
+	transition: color .15s ease, border-color .15s ease;
+}
+
+.ek-cat-arrow:hover { color: var(--ek-green); border-color: var(--ek-green); }
+
+.ek-cat-arrow-prev { left: 6px; }
+.ek-cat-arrow-next { right: 6px; }
+
+.ek-cat-arrow.disabled { opacity: .35; pointer-events: none; }
+
+/* ---------- Product card ---------- */
+.ek-product {
+	border: 0;
+	border-radius: 8px;
+	overflow: hidden;
+	transition: box-shadow .15s ease, transform .15s ease;
+}
+
+/* ---------- Halaman CV perusahaan ---------- */
+.ek-cv-profile { border-left: 4px solid var(--ek-green); }
+
+.ek-cv-profile-head {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	flex-wrap: nowrap;
+}
+
+.ek-cv-logo {
+	width: 96px;
+	height: 96px;
+	object-fit: contain;
+	object-position: center;
+	background-color: #fff;
+	flex-shrink: 0;
+}
+
+.ek-cv-info {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.ek-cv-profile-head .flex-shrink-0 { align-self: center; }
+
+.ek-company-card { position: relative; }
+
+.ek-cv-btn {
+	position: absolute;
+	top: 1.6rem;
+	right: .75rem;
+	z-index: 1;
+	padding: .55rem 1.15rem;
+	font-size: .95rem;
+	border-radius: 8px;
+}
+
+.ek-company-info { padding-right: 10rem; min-width: 0; overflow-wrap: anywhere; }
+
+.ek-company-logo {
+	height: 48px;
+	width: auto;
+}
+
+.ek-btn-contact {
+	padding: .55rem 1.4rem;
+	font-size: .95rem;
+	border-radius: 8px;
+	white-space: nowrap;
+}
+
+.ek-card.modal-content { border: 0; border-radius: 12px; }
+
+.ek-scroll-row {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	scroll-behavior: smooth;
+	gap: .75rem;
+	padding-bottom: .5rem;
+	scrollbar-width: thin;
+}
+
+.ek-scroll-row .col {
+	flex: 0 0 auto;
+	width: 180px;
+}
+
+.ek-scroll-row::-webkit-scrollbar { height: 6px; }
+
+.ek-scroll-row::-webkit-scrollbar-thumb { background: #d3d7db; border-radius: 999px; }
+
+/* ---------- Product card ---------- */
+
+.ek-product:hover {
+	box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+	transform: translateY(-2px);
+}
+
+.ek-product-img {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	background: #fff;
+	overflow: hidden;
+}
+
+.ek-product-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.ek-badge-promo {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	background: var(--ek-red);
+	color: #fff;
+	font-size: .68rem;
+	font-weight: 700;
+	padding: .15rem .45rem;
+	border-radius: 4px;
+	letter-spacing: .5px;
+}
+
+/* ---------- Tombol favorit (heart) ---------- */
+.ek-fav {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	margin: 0;
+}
+
+.ek-fav-btn {
+	background: rgba(255, 255, 255, .92);
+	border: 0;
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+	line-height: 1;
+	font-size: 1rem;
+	color: #999;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+}
+
+.ek-fav-btn:hover { color: var(--ek-red); }
+
+.ek-fav-active { color: var(--ek-red); }
+
+/* ---------- Tombol dark mode ---------- */
+.ek-btn-dark {
+	background: rgba(255, 255, 255, .2);
+	border: 1px solid rgba(255, 255, 255, .5);
+	border-radius: 50%;
+	width: 34px;
+	height: 34px;
+	color: #fff;
+	font-size: 1rem;
+	line-height: 1;
+}
+
+.ek-btn-dark:hover { background: rgba(255, 255, 255, .32); color: #fff; }
+
+/* ---------- Avatar profil & dropdown navbar ---------- */
+.ek-nav-user .ek-nav-avatar-btn {
+	background: transparent;
+	border: 0;
+	padding: 0;
+	line-height: 0;
+}
+
+.ek-nav-user .ek-nav-avatar-btn::after { display: none; }
+
+.ek-nav-avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 2px solid #bbb;
+	background: #fff;
+}
+
+.ek-nav-avatar-fallback {
+	background: var(--ek-green-dark);
+	color: #fff;
+	font-size: 1.05rem;
+	font-weight: 700;
+}
+
+.ek-nav-avatar-btn:hover .ek-nav-avatar {
+	border-color: #999;
+	box-shadow: 0 0 0 3px rgba(0, 0, 0, .15);
+}
+
+.ek-nav-user .dropdown-menu {
+	min-width: 220px;
+	border: 0;
+	border-radius: 10px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+}
+
+.ek-nav-user .dropdown-item {
+	border-radius: 6px;
+	font-size: .9rem;
+	padding: .5rem .9rem;
+}
+
+.ek-nav-user .dropdown-item:hover { background: #f2f7f2; color: var(--ek-green-dark); }
+
+.ek-nav-user .dropdown-item.text-danger:hover { background: #fdf0ee; color: var(--ek-red) !important; }
+
+.ek-product-title {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	font-size: .85rem;
+	line-height: 1.3;
+	color: #333;
+	min-height: 2.2rem;
+}
+
+.ek-product-price {
+	color: var(--ek-price);
+	font-weight: 700;
+	font-size: .92rem;
+}
+
+.ek-product-oldprice { color: #999; font-weight: 400; font-size: .78rem; }
+
+.ek-product-rating { font-size: .78rem; color: #555; }
+
+.ek-star { color: #ffb800; }
+
+.ek-product-company {
+	font-size: .75rem;
+	color: #767676;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.ek-btn-marketplace {
+	background: var(--ek-green);
+	color: #fff;
+	font-weight: 600;
+	font-size: .8rem;
+	border-radius: 6px;
+	border: 0;
+}
+
+.ek-btn-marketplace:hover { background: var(--ek-green-dark); color: #fff; }
+
+.ek-market-logo {
+	background: #fff;
+	border: 1px solid #e3e6e8;
+	border-radius: 6px;
+	padding: .5rem .9rem;
+	line-height: 1;
+}
+.ek-market-logo img { display: block; }
+.ek-market-logo:hover { background: #f7f7f7; border-color: #c9cdd1; }
+
+/* ---------- Product detail ---------- */
+.ek-gallery-main {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	background: #fff;
+	border: 1px solid #eef0f2;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.ek-gallery-main img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.ek-thumb {
+	width: 64px;
+	height: 64px;
+	display: block;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.ek-thumb:hover { border-color: var(--ek-green); }
+
+.ek-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.ek-price {
+	font-size: 1.6rem;
+	font-weight: 800;
+	color: var(--ek-price);
+}
+
+.ek-price-promo {
+	font-size: 1.6rem;
+	font-weight: 800;
+	color: var(--ek-red);
+}
+
+/* ---------- Rating stars ---------- */
+.ek-stars { display: inline-flex; flex-direction: row-reverse; }
+
+.ek-stars input[type="radio"] { display: none; }
+
+.ek-star-label {
+	font-size: 1.6rem;
+	color: #ccc;
+	cursor: pointer;
+	padding: 0 .05rem;
+	transition: color .1s;
+}
+
+.ek-stars input[type="radio"]:checked ~ label,
+.ek-star-label:hover,
+.ek-star-label:hover ~ .ek-star-label { color: #ffb800; }
+
+.ek-stars-readonly { flex-direction: row; }
+
+.ek-star-on { color: #ffb800; }
+
+.ek-star-off { color: #d6d6d6; }
+
+.ek-avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: var(--ek-green);
+	color: #fff;
+	font-size: .8rem;
+	font-weight: 700;
+}
+
+/* ---------- Cards umum ---------- */
+.card.shadow-sm { box-shadow: 0 1px 3px rgba(0, 0, 0, .08) !important; }
+
+main.container { min-height: 70vh; }
+
+/* ---------- Mobile (perangkat kecil) ---------- */
+@media (max-width: 767.98px) {
+	.ek-topbar .container { padding-top: .75rem; padding-bottom: .75rem; }
+	.ek-filter-bar .ms-auto { width: 100%; }
+	.ek-filter-bar .form-select { width: 100%; }
+	.ek-fav-btn { width: 36px; height: 36px; font-size: 1.05rem; }
+	.ek-cat-arrow { width: 36px; height: 36px; }
+	.ek-cv-logo { width: 64px; height: 64px; }
+	.ek-cv-profile-head { gap: .5rem; }
+	.ek-btn-contact { padding: .45rem 1.05rem; font-size: .88rem; }
+	.ek-company-logo { height: 38px; }
+	.ek-cv-btn {
+		top: 50%;
+		right: .75rem;
+		transform: translateY(-50%);
+		white-space: nowrap;
+		padding: .4rem .8rem;
+		font-size: .85rem;
+	}
+	.ek-company-info { padding-right: 7rem; }
+	.ek-company-info .small { font-size: .78rem; }
+}
+
+@media (max-width: 575.98px) {
+	.ek-cv-logo { width: 52px; height: 52px; }
+	.ek-btn-contact { padding: .4rem .9rem; font-size: .82rem; }
+}
+
+@media (max-width: 575.98px) {
+	.ek-logo-img {
+		height: 32px;
+		width: auto;
+		max-width: 110px;
+		object-fit: contain;
+	}
+	.ek-header-auth .ek-logo-img { height: 40px; max-width: 150px; }
+	.ek-search .form-control { font-size: .85rem; padding: .3rem .6rem; }
+	.ek-btn-search { padding: .3rem .6rem; font-size: .9rem; }
+	.ek-search-txt { display: none; }
+	.ek-nav-avatar { width: 32px; height: 32px; }
+	.ek-nav-avatar-fallback { font-size: .9rem; }
+	.ek-navlink { font-size: .8rem; padding: .2rem .4rem; }
+}
