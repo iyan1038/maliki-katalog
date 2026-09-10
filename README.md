@@ -1,6 +1,6 @@
-# E-Katalog
+# maliki katalog
 
-Aplikasi **E-Katalog** adalah platform katalog produk digital dengan tampilan minimalis **putih/hitam** (tergantung mode) dan aksen **biru**, di mana perusahaan dapat menampilkan produknya yang terhubung langsung ke berbagai marketplace (Siplah, Tokoladang, GratisOngkir, dll). Member dapat menjelajah, memberi rating, menyimpan produk favorit, serta menerima promo dan rekomendasi produk melalui WhatsApp.
+Aplikasi **maliki katalog** adalah platform katalog produk digital dengan tampilan minimalis **putih/hitam** (tergantung mode) dan aksen **biru**, di mana perusahaan dapat menampilkan produknya yang terhubung langsung ke berbagai marketplace (Siplah, Tokoladang, GratisOngkir, dll). Member dapat menjelajah, memberi rating, menyimpan produk favorit, serta menerima promo dan rekomendasi produk melalui WhatsApp.
 
 ## Fitur Utama
 
@@ -357,5 +357,6 @@ settings
 ## Lisensi
 
 Hak cipta milik pengembang. Digunakan untuk keperluan internal / akademik.
-#   m a l i k i - k a t a l o g  
+#   m a l i k i - k a t a l o g 
+ 
  
