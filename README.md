@@ -1,6 +1,28 @@
-# maliki katalog
+# Maliki Katalog
 
-Aplikasi **maliki katalog** adalah platform katalog produk digital dengan tampilan minimalis **putih/hitam** (tergantung mode) dan aksen **biru**, di mana perusahaan dapat menampilkan produknya yang terhubung langsung ke berbagai marketplace (Siplah, Tokoladang, GratisOngkir, dll). Member dapat menjelajah, memberi rating, menyimpan produk favorit, serta menerima promo dan rekomendasi produk melalui WhatsApp.
+Aplikasi **E-Katalog** adalah platform katalog produk digital dengan tampilan minimalis **putih/hitam** (tergantung mode) dan aksen **biru**, di mana perusahaan dapat menampilkan produknya yang terhubung langsung ke berbagai marketplace (Siplah, Tokoladang, GratisOngkir, dll). Member dapat menjelajah, memberi rating, menyimpan produk favorit, serta menerima promo dan rekomendasi produk melalui WhatsApp.
+
+---
+
+## Daftar Isi
+
+- [Fitur Utama](#fitur-utama)
+- [Tech Stack](#tech-stack)
+- [Struktur Proyek](#struktur-proyek)
+- [Skema Database](#skema-database)
+- [Data Flow Diagram (DFD)](#data-flow-diagram-dfd)
+- [Alur Pengguna (Member/Pengunjung)](#alur-pengguna-memberpengunjung)
+- [Alur Admin](#alur-admin)
+- [Entity Relationship Diagram (ERD)](#entity-relationship-diagram-erd)
+- [Cara Install](#cara-install)
+- [Akun Awal (Seeder)](#akun-awal-seeder)
+- [Konfigurasi Eksternal](#konfigurasi-eksternal)
+- [Alur Sortir Produk](#alur-sortir-produk-prioritas)
+- [Roadmap Pengembangan](#roadmap-pengembangan)
+- [Keamanan](#keamanan)
+- [Lisensi](#lisensi)
+
+---
 
 ## Fitur Utama
 
@@ -26,6 +48,8 @@ Aplikasi **maliki katalog** adalah platform katalog produk digital dengan tampil
 20. **Banner promosi** di sela-sela daftar produk.
 21. **Halaman Etalase (CV) Perusahaan** — profil perusahaan + baris rekomendasi, filter kategori & urutan, daftar produk, dan tombol **Hubungi** yang mengirim pesan ke nomor WhatsApp pemilik via **API WAAJO** (menampilkan alert bila WAAJO belum dikonfigurasi).
 
+---
+
 ## Tech Stack
 
 | Komponen | Teknologi |
@@ -36,6 +60,8 @@ Aplikasi **maliki katalog** adalah platform katalog produk digital dengan tampil
 | Integrasi WhatsApp | API **WAAJO** |
 | Frontend | HTML, CSS, JavaScript (Vanilla + Bootstrap), jQuery |
 | Penyimpanan Gambar | Folder server (`assets/uploads`) |
+
+---
 
 ## Struktur Proyek
 
@@ -62,7 +88,10 @@ katalog/
 └── index.php
 ```
 
-## Skema Database (Ringkasan)
+---
+
+<details>
+<summary><strong>Skema Database (Ringkasan)</strong></summary>
 
 - **users** — google_id, name, email, password, avatar, role (admin/member), wa_number, is_active
 - **companies** — user_id (pemilik), name, npwp, description, logo, address, city, is_active
@@ -84,7 +113,12 @@ katalog/
 - **wa_logs** — user_id, phone, message_type (promo/rekomendasi), status, response
 - **settings** — key, value (konfigurasi global aplikasi)
 
-## Data Flow Diagram (DFD)
+</details>
+
+---
+
+<details>
+<summary><strong>Data Flow Diagram (DFD)</strong></summary>
 
 DFD Level 1 menggambarkan alur data utama antara aktor (Member, Admin, Perusahaan/Marketplace) dengan proses-proses inti aplikasi.
 
@@ -152,6 +186,10 @@ PROSES 7.0 ETALASE & HUBUNGI PERUSAHAAN
                      alert jika WAAJO belum aktif)
 ```
 
+</details>
+
+---
+
 ## Alur Pengguna (Member/Pengunjung)
 
 1. Membuka katalog → mencari/memfilter/sortir produk.
@@ -164,6 +202,8 @@ PROSES 7.0 ETALASE & HUBUNGI PERUSAHAAN
 4. Tombol **"Hubungi"** di card profil → form kecil (nama, nomor WA, pesan) → dikirim ke nomor WhatsApp pemilik perusahaan via API WAAJO. Bila WAAJO belum dikonfigurasi, muncul alert "Fitur WhatsApp belum dapat digunakan".
 5. Member dapat memberi rating, menyimpan favorit, mengelola profil, dan menerima promo/rekomendasi via WhatsApp.
 
+---
+
 ## Alur Admin
 
 1. Login sebagai admin → dashboard.
@@ -171,7 +211,10 @@ PROSES 7.0 ETALASE & HUBUNGI PERUSAHAAN
 3. Mengirim **promo** ke seluruh member dan **rekomendasi** personal ke member tertentu via API WAAJO, serta memantau log pengiriman (`wa_logs`).
 4. Menonaktifkan perusahaan/produk yang tidak layak tampil di katalog.
 
-## Entity Relationship Diagram (ERD)
+---
+
+<details>
+<summary><strong>Entity Relationship Diagram (ERD)</strong></summary>
 
 ```
  ENTITAS                 RELASI                                 ENTITAS
@@ -194,78 +237,40 @@ PROSES 7.0 ETALASE & HUBUNGI PERUSAHAAN
  users (1) ──────────────< membuat >───────────────── (N) search_logs
  users (1) ──────────────< meminta >───────────────── (N) password_resets
  users (1) ──────────────< menerima >──────────────── (N) wa_logs
-
-STRUCTUR TABEL
-────────────────────────────────────────────────────────────────────────
-users
-  id PK, google_id, name, email, password, avatar,
-  role (admin/member), wa_number, is_active
-
-companies
-  id PK, user_id FK -> users.id, name, npwp, description,
-  logo, address, city, is_active
-
-kbli
-  id PK, code, name
-
-company_kbli
-  company_id FK -> companies.id, kbli_id FK -> kbli.id
-
-categories
-  id PK, name, slug, sort_order, is_active
-
-category_kbli
-  category_id FK -> categories.id, kbli_id FK -> kbli.id
-
-platforms
-  id PK, name, slug, url, logo
-
-products
-  id PK, company_id FK -> companies.id, name, price, unit, description,
-  avg_rating, rating_count, is_promo, promo_price, is_featured,
-  total_views, is_active
-
-product_kbli
-  product_id FK -> products.id, kbli_id FK -> kbli.id
-
-product_images
-  id PK, product_id FK -> products.id, filename, position
-
-product_platforms
-  id PK, product_id FK -> products.id, platform_id FK -> platforms.id,
-  product_url
-
-ratings
-  id PK, product_id FK -> products.id, user_id FK -> users.id,
-  rating (1-5), comment
-
-favorites
-  id PK, user_id FK -> users.id, product_id FK -> products.id
-
-banners
-  id PK, title, image, url, position, sort_order, is_active
-
-user_behaviors
-  id PK, user_id FK -> users.id, product_id FK -> products.id,
-  behavior_type (view/search/click), platform_id FK -> platforms.id, created_at
-
-search_logs
-  id PK, user_id FK -> users.id, keyword
-
-password_resets
-  id PK, email, token, expires_at
-
-wa_logs
-  id PK, user_id FK -> users.id, phone,
-  message_type (promo/rekomendasi), status, response
-
-settings
-  id PK, key, value
 ```
+
+**Struktur Tabel:**
+
+| Tabel | Kolom |
+|---|---|
+| **users** | `id` PK, google_id, name, email, password, avatar, role (admin/member), wa_number, is_active |
+| **companies** | `id` PK, user_id FK → users.id, name, npwp, description, logo, address, city, is_active |
+| **kbli** | `id` PK, code, name |
+| **company_kbli** | company_id FK → companies.id, kbli_id FK → kbli.id |
+| **categories** | `id` PK, name, slug, sort_order, is_active |
+| **category_kbli** | category_id FK → categories.id, kbli_id FK → kbli.id |
+| **platforms** | `id` PK, name, slug, url, logo |
+| **products** | `id` PK, company_id FK → companies.id, name, price, unit, description, avg_rating, rating_count, is_promo, promo_price, is_featured, total_views, is_active |
+| **product_kbli** | product_id FK → products.id, kbli_id FK → kbli.id |
+| **product_images** | `id` PK, product_id FK → products.id, filename, position |
+| **product_platforms** | `id` PK, product_id FK → products.id, platform_id FK → platforms.id, product_url |
+| **ratings** | `id` PK, product_id FK → products.id, user_id FK → users.id, rating (1–5), comment |
+| **favorites** | `id` PK, user_id FK → users.id, product_id FK → products.id |
+| **banners** | `id` PK, title, image, url, position, sort_order, is_active |
+| **user_behaviors** | `id` PK, user_id FK → users.id, product_id FK → products.id, behavior_type (view/search/click), platform_id FK → platforms.id, created_at |
+| **search_logs** | `id` PK, user_id FK → users.id, keyword |
+| **password_resets** | `id` PK, email, token, expires_at |
+| **wa_logs** | `id` PK, user_id FK → users.id, phone, message_type (promo/rekomendasi), status, response |
+| **settings** | `id` PK, key, value |
+
+</details>
+
+---
 
 ## Cara Install
 
 ### Prasyarat
+
 - XAMPP (PHP 5.6+ / 7.x, MySQL) — sudah tersedia di `D:\xampp`
 - Composer (opsional, untuk dependency Google Client)
 - Client ID/Secret Google OAuth (placeholder di `application/config/google.php`)
@@ -314,12 +319,16 @@ settings
    http://localhost/katalog/
    ```
 
+---
+
 ## Akun Awal (Seeder)
 
 | Role | Email | Password |
 |---|---|---|
 | Admin | `admin@ekatalog.test` | `admin123` |
 | Member | `member@ekatalog.test` | `member123` |
+
+---
 
 ## Konfigurasi Eksternal (Placeholder)
 
@@ -328,12 +337,16 @@ settings
 | Google Client ID / Secret | `application/config/google.php` | Wajib untuk fitur login Google |
 | WAAJO API Key | `application/config/waajo.php` | Wajib untuk kirim promo/rekomendasi dan tombol **Hubungi** perusahaan |
 
+---
+
 ## Alur Sortir Produk (Prioritas)
 
 1. **Promo** — produk dengan `is_promo = 1` dan harga promo aktif.
 2. **Kebiasaan user** — skor preferensi dari riwayat `user_behaviors` (dilihat/dicari/diklik) per kategori KBLI.
 3. **Rating** — nilai `avg_rating` dan jumlah rating.
 4. **Produk terbaru** — berdasarkan `created_at`.
+
+---
 
 ## Roadmap Pengembangan
 
@@ -345,6 +358,8 @@ settings
 - [ ] **Fase 6 — Integrasi WAAJO**: Kirim promo/rekomendasi via WhatsApp
 - [ ] **Fase 7 — Finalisasi**: Polish mobile, testing, siap deploy
 
+---
+
 ## Keamanan
 
 - Session & CSRF protection aktif
@@ -354,9 +369,4 @@ settings
 - Validasi upload gambar (tipe, ukuran, rename)
 - Pembatasan akses berbasis role (admin/member)
 
-## Lisensi
-
-Hak cipta milik pengembang. Digunakan untuk keperluan internal / akademik.
-#   m a l i k i - k a t a l o g 
- 
- 
+---
