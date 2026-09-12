@@ -124,6 +124,8 @@ body.ek-dark .ek-scroll-row::-webkit-scrollbar-thumb { background: #3a424b; }
 
 body.ek-dark .ek-cv-logo { background-color: #1b2026; }
 
+body.ek-dark .ek-company-logo { background-color: #1b2026; }
+
 body.ek-dark .ek-card.modal-content { background-color: #1b2026; color: #e6e6e6; border-color: #2a2f36; }
 
 body.ek-dark .ek-card.modal-content .modal-header { border-color: #2a2f36; }

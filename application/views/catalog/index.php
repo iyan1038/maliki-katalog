@@ -105,16 +105,17 @@ $ek_sort_val = ($sort !== 'recommended') ? $sort : '';
 	</div>
 <?php else: ?>
 	<?php
-	$mid_slots = isset($banner_mid_count) ? (int) $banner_mid_count : 0;
+	$mid_slots  = isset($banner_mid_count) ? (int) $banner_mid_count : 0;
+	$mid_offset = isset($banner_mid_offset) ? (int) $banner_mid_offset : 0;
 	?>
 	<div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
 		<?php $i = 0; $slot = 0; foreach ($products as $p): $i++; ?>
 			<?php $this->load->view('templates/product_card', array('product' => $p)); ?>
 
-			<?php if ($i >= 15 && $slot < $mid_slots && isset($banners_middle[$slot])): ?>
+			<?php if ($i >= 10 && $slot < $mid_slots && count($banners_middle) > 0): ?>
 				</div>
 				<div class="my-3">
-					<?php $banner = $banners_middle[$slot]; ?>
+					<?php $banner = $banners_middle[($mid_offset + $slot) % count($banners_middle)]; ?>
 					<a href="<?php echo $banner->url ? htmlspecialchars($banner->url) : site_url('catalog'); ?>" class="d-block">
 						<img src="<?php echo base_url('assets/uploads/banners/'.$banner->image); ?>" class="ek-banner" alt="<?php echo htmlspecialchars($banner->title); ?>">
 					</a>

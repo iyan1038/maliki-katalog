@@ -1,0 +1,3 @@
+# Log files (CodeIgniter)
+application/logs/*.php
+!application/logs/index.html

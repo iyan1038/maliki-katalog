@@ -24,9 +24,15 @@ class Products extends Admin_Controller
 
 	public function index()
 	{
-		$data['title'] = 'Produk';
+		$search     = trim((string) $this->input->get('q', TRUE));
+		$company_id = (int) $this->input->get('company');
+
+		$data['title']       = 'Produk';
 		$data['active_menu'] = 'products';
-		$data['items'] = $this->Product_m->get_all();
+		$data['items']       = $this->Product_m->get_all($search, $company_id > 0 ? $company_id : NULL);
+		$data['companies']   = $this->Company_m->get_all();
+		$data['search']      = $search;
+		$data['company_id']  = $company_id;
 
 		$this->render('admin/products/index', $data);
 	}

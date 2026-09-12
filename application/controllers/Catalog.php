@@ -82,10 +82,18 @@ class Catalog extends CI_Controller
 		$data['banners_top']    = $this->Banner_m->get_active_by_position('top');
 		$data['banners_middle'] = $this->Banner_m->get_active_by_position('middle');
 		$data['banners_bottom'] = $this->Banner_m->get_active_by_position('bottom');
-		$data['banner_mid_count'] = min(
-			(int) floor(count($products) / 15),
-			count($data['banners_middle'])
-		);
+		$total_mid = count($data['banners_middle']);
+
+		if ($total_mid > 0 && count($products) >= 10)
+		{
+			$data['banner_mid_offset'] = ($page - 1) % $total_mid;
+			$data['banner_mid_count']  = 1;
+		}
+		else
+		{
+			$data['banner_mid_offset'] = 0;
+			$data['banner_mid_count']  = 0;
+		}
 
 		$data['title'] = 'Katalog';
 

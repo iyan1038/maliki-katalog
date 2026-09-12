@@ -12,7 +12,7 @@ $logo_url = $company->logo ? base_url('assets/uploads/companies/'.$company->logo
 	<div class="card-body p-3 p-md-4">
 		<div class="d-flex align-items-start gap-3">
 			<?php if ($logo_url): ?>
-				<img src="<?php echo $logo_url; ?>" alt="logo" height="64" class="border rounded flex-shrink-0">
+				<img src="<?php echo $logo_url; ?>" alt="logo" class="ek-cv-logo border rounded flex-shrink-0">
 			<?php endif; ?>
 			<div class="flex-grow-1">
 				<h4 class="mb-1"><?php echo htmlspecialchars($company->name); ?></h4>

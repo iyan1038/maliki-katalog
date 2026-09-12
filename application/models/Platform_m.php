@@ -45,11 +45,22 @@ class Platform_m extends CI_Model
 
 	public function delete($id)
 	{
+		$platform = $this->get_by_id($id);
+
 		$this->db->trans_start();
 		$this->db->where('platform_id', $id)->delete('product_platforms');
 		$this->db->where('platform_id', $id)->update('user_behaviors', array('platform_id' => NULL));
 		$this->db->where('id', $id)->delete($this->table);
 		$this->db->trans_complete();
+
+		if ($this->db->trans_status() && $platform && $platform->logo)
+		{
+			$path = FCPATH.'assets/uploads/platforms/'.$platform->logo;
+			if (is_file($path))
+			{
+				@unlink($path);
+			}
+		}
 
 		return $this->db->trans_status();
 	}

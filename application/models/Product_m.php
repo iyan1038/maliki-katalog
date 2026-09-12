@@ -18,11 +18,26 @@ class Product_m extends CI_Model
 		$this->load->database();
 	}
 
-	public function get_all()
+	public function get_all($search = '', $company_id = NULL)
 	{
-		return $this->db
+		$this->db
 			->select('products.*, companies.name AS company_name')
-			->join('companies', 'companies.id = products.company_id', 'left')
+			->join('companies', 'companies.id = products.company_id', 'left');
+
+		if ($search !== '')
+		{
+			$this->db
+				->group_start()
+				->like('products.name', $search)
+				->group_end();
+		}
+
+		if ($company_id !== NULL && $company_id > 0)
+		{
+			$this->db->where('products.company_id', $company_id);
+		}
+
+		return $this->db
 			->order_by('products.created_at', 'DESC')
 			->get($this->table)
 			->result();
@@ -464,7 +479,7 @@ class Product_m extends CI_Model
 
 		if ($platform_id !== NULL && $platform_id > 0)
 		{
-			$this->db->where("EXISTS (SELECT 1 FROM product_platforms pp WHERE pp.product_id = p.id AND pp.platform_id = ".(int) $platform_id.")");
+			$this->db->where("EXISTS (SELECT 1 FROM product_platforms pp WHERE pp.product_id = p.id AND pp.platform_id = ".(int) $platform_id." AND pp.is_visible = 1)");
 		}
 
 		if ($category_id !== NULL && $category_id > 0)

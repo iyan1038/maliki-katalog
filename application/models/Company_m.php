@@ -95,10 +95,21 @@ class Company_m extends CI_Model
 
 	public function delete($id)
 	{
+		$company = $this->get_by_id($id);
+
 		$this->db->trans_start();
 		$this->db->where('company_id', $id)->delete('company_kbli');
 		$this->db->where('id', $id)->delete($this->table);
 		$this->db->trans_complete();
+
+		if ($this->db->trans_status() && $company && $company->logo)
+		{
+			$path = FCPATH.'assets/uploads/companies/'.$company->logo;
+			if (is_file($path))
+			{
+				@unlink($path);
+			}
+		}
 
 		return $this->db->trans_status();
 	}

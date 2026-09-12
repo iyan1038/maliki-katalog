@@ -260,8 +260,12 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .ek-company-info { padding-right: 10rem; min-width: 0; overflow-wrap: anywhere; }
 
 .ek-company-logo {
-	height: 48px;
-	width: auto;
+	width: 56px;
+	height: 56px;
+	object-fit: contain;
+	object-position: center;
+	background-color: #fff;
+	flex-shrink: 0;
 }
 
 .ek-btn-contact {
@@ -560,11 +564,11 @@ main.container { min-height: 70vh; }
 	.ek-filter-bar .ms-auto { width: 100%; }
 	.ek-filter-bar .form-select { width: 100%; }
 	.ek-fav-btn { width: 36px; height: 36px; font-size: 1.05rem; }
-	.ek-cat-arrow { width: 36px; height: 36px; }
+	.ek-cat-arrow { display: none; }
 	.ek-cv-logo { width: 64px; height: 64px; }
 	.ek-cv-profile-head { gap: .5rem; }
 	.ek-btn-contact { padding: .45rem 1.05rem; font-size: .88rem; }
-	.ek-company-logo { height: 38px; }
+	.ek-company-logo { width: 48px; height: 48px; }
 	.ek-cv-btn {
 		top: 50%;
 		right: .75rem;
@@ -579,6 +583,7 @@ main.container { min-height: 70vh; }
 
 @media (max-width: 575.98px) {
 	.ek-cv-logo { width: 52px; height: 52px; }
+	.ek-company-logo { width: 40px; height: 40px; }
 	.ek-btn-contact { padding: .4rem .9rem; font-size: .82rem; }
 }
 

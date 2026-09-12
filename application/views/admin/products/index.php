@@ -4,6 +4,21 @@
 		<span>Daftar Produk</span>
 		<a href="<?php echo site_url('admin/products/create'); ?>" class="btn btn-primary btn-sm">+ Tambah</a>
 	</div>
+	<div class="card-header bg-white border-top-0">
+		<form method="get" action="<?php echo site_url('admin/products'); ?>" class="d-flex flex-wrap align-items-center gap-2">
+			<input type="text" name="q" value="<?php echo htmlspecialchars($search); ?>" class="form-control form-control-sm" placeholder="Cari nama produk..." style="max-width: 260px;">
+			<select name="company" class="form-select form-select-sm" style="max-width: 250px;">
+				<option value="">Semua Perusahaan</option>
+				<?php foreach ($companies as $c): ?>
+					<option value="<?php echo $c->id; ?>" <?php echo $company_id === (int) $c->id ? 'selected' : ''; ?>><?php echo htmlspecialchars($c->name); ?></option>
+				<?php endforeach; ?>
+			</select>
+			<button type="submit" class="btn btn-sm btn-outline-primary">Filter</button>
+			<?php if ($search !== '' || $company_id > 0): ?>
+				<a href="<?php echo site_url('admin/products'); ?>" class="btn btn-sm btn-outline-secondary">Reset</a>
+			<?php endif; ?>
+		</form>
+	</div>
 	<div class="card-body p-0">
 		<table class="table table-hover align-middle mb-0">
 			<thead>
