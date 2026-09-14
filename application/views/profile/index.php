@@ -39,12 +39,16 @@
 
 		<div class="card border-0 shadow-sm mt-4">
 			<div class="card-body">
-				<h6 class="fw-semibold mb-3">Ganti Password</h6>
+				<h6 class="fw-semibold mb-3"><?php echo $user->password ? 'Ganti Password' : 'Buat Password'; ?></h6>
 				<?php echo form_open('profile/change_password'); ?>
+					<?php if ($user->password): ?>
 					<div class="mb-3">
 						<label for="current_password" class="form-label">Password Lama</label>
 						<input type="password" class="form-control" id="current_password" name="current_password" required>
 					</div>
+					<?php else: ?>
+					<p class="text-muted small">Akun Anda terdaftar melalui Google. Buat password baru agar bisa login secara manual.</p>
+					<?php endif; ?>
 					<div class="mb-3">
 						<label for="new_password" class="form-label">Password Baru</label>
 						<input type="password" class="form-control" id="new_password" name="new_password" required>
@@ -53,7 +57,7 @@
 						<label for="new_password_confirm" class="form-label">Konfirmasi Password Baru</label>
 						<input type="password" class="form-control" id="new_password_confirm" name="new_password_confirm" required>
 					</div>
-					<button type="submit" class="btn btn-outline-danger">Ganti Password</button>
+					<button type="submit" class="btn btn-outline-danger"><?php echo $user->password ? 'Ganti Password' : 'Buat Password'; ?></button>
 				<?php echo form_close(); ?>
 			</div>
 		</div>

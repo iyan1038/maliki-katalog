@@ -85,8 +85,14 @@ class Profile extends User_Controller
 	public function change_password()
 	{
 		$user_id = (int) $this->session->userdata('user_id');
+		$user    = $this->User_m->get_by_id($user_id);
+		$has_password = ! empty($user->password);
 
-		$this->form_validation->set_rules('current_password', 'Password Lama', 'required');
+		if ($has_password)
+		{
+			$this->form_validation->set_rules('current_password', 'Password Lama', 'required');
+		}
+
 		$this->form_validation->set_rules('new_password', 'Password Baru', 'required|min_length[6]|max_length[72]');
 		$this->form_validation->set_rules('new_password_confirm', 'Konfirmasi Password Baru', 'required|matches[new_password]');
 
@@ -96,9 +102,7 @@ class Profile extends User_Controller
 			redirect('profile');
 		}
 
-		$user = $this->User_m->get_by_id($user_id);
-
-		if ( ! $user->password || ! password_verify($this->input->post('current_password'), $user->password))
+		if ($has_password && ! password_verify($this->input->post('current_password'), $user->password))
 		{
 			$this->session->set_flashdata('error', 'Password lama salah.');
 			redirect('profile');

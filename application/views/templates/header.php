@@ -44,8 +44,23 @@ $ek_route = $this->router->class.'/'.$this->router->method;
 					<?php if ($ek_logged): ?>
 						<div class="d-flex align-items-center gap-2 flex-wrap">
 							<?php
-								$ek_avatar = $this->session->userdata('avatar');
-								$ek_name   = $this->session->userdata('name');
+								$this->load->model('User_m');
+								$ek_user   = get_instance()->User_m->get_by_id($this->session->userdata('user_id'));
+
+								$ek_avatar = $ek_user ? $ek_user->avatar : $this->session->userdata('avatar');
+								$ek_name   = $ek_user ? $ek_user->name   : $this->session->userdata('name');
+								$ek_email  = $ek_user ? $ek_user->email  : $this->session->userdata('email');
+
+								if ($ek_user && (
+									$ek_user->avatar !== $this->session->userdata('avatar') ||
+									$ek_user->name   !== $this->session->userdata('name')
+								))
+								{
+									$this->session->set_userdata(array(
+										'avatar' => $ek_user->avatar,
+										'name'   => $ek_user->name
+									));
+								}
 							?>
 							<div class="ek-nav-user dropdown">
 								<button type="button" class="ek-nav-avatar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -57,7 +72,7 @@ $ek_route = $this->router->class.'/'.$this->router->method;
 								</button>
 								<ul class="dropdown-menu dropdown-menu-end shadow">
 									<li><span class="dropdown-item-text fw-semibold text-truncate"><?php echo htmlspecialchars($ek_name); ?></span></li>
-									<li><span class="dropdown-item-text small text-muted text-truncate"><?php echo htmlspecialchars($this->session->userdata('email')); ?></span></li>
+									<li><span class="dropdown-item-text small text-muted text-truncate"><?php echo htmlspecialchars($ek_email); ?></span></li>
 									<li><hr class="dropdown-divider"></li>
 									<li><a class="dropdown-item" href="<?php echo site_url('profile'); ?>">Profil Saya</a></li>
 									<?php if ($ek_role === 'member'): ?>

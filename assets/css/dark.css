@@ -138,7 +138,7 @@ body.ek-dark .ek-topbar {
 }
 
 body.ek-dark .ek-logo-img {
-	filter: brightness(0) invert(1);
+	content: url('../images/logo_ireng.png');
 }
 
 body.ek-dark .ek-navlink { color: #e6e6e6; }
