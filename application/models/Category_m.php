@@ -35,6 +35,28 @@ class Category_m extends CI_Model
 		return $this->db->get($this->table)->result();
 	}
 
+	/**
+	 * Kategori aktif yang memiliki minimal satu produk aktif milik sebuah
+	 * perusahaan (via relasi products -> product_kbli -> category_kbli).
+	 */
+	public function get_for_company($company_id)
+	{
+		return $this->db
+			->select('categories.*')
+			->from('categories')
+			->join('category_kbli', 'category_kbli.category_id = categories.id')
+			->join('product_kbli', 'product_kbli.kbli_id = category_kbli.kbli_id')
+			->join('products', 'products.id = product_kbli.product_id')
+			->where('categories.is_active', 1)
+			->where('products.company_id', $company_id)
+			->where('products.is_active', 1)
+			->group_by('categories.id')
+			->order_by('categories.sort_order', 'ASC')
+			->order_by('categories.name', 'ASC')
+			->get()
+			->result();
+	}
+
 	public function get_by_id($id)
 	{
 		return $this->db->where('id', $id)->get($this->table)->row();

@@ -17,7 +17,9 @@ class Company extends CI_Controller
 		$this->load->model('Product_m');
 		$this->load->model('Category_m');
 		$this->load->model('Favorite_m');
-	}	protected $allowed_sorts = array('recommended', 'promo', 'rating', 'newest', 'price_asc', 'price_desc');
+	}
+
+	protected $allowed_sorts = array('recommended', 'promo', 'visit', 'newest', 'price_asc', 'price_desc');
 
 	public function index($id)
 	{
@@ -86,7 +88,7 @@ class Company extends CI_Controller
 		$is_member = $logged_in && $this->session->userdata('role') === 'member';
 		$user_id   = $is_member ? (int) $this->session->userdata('user_id') : NULL;
 
-		$categories = $this->Category_m->get_all(TRUE);
+		$categories = $this->Category_m->get_for_company($company->id);
 
 		// Baris rekomendasi: kategori produk yang dikunjungi (row_cat),
 		// fallback ke kategori pertama yang punya produk di perusahaan ini.
@@ -118,7 +120,10 @@ class Company extends CI_Controller
 		}
 
 		$this->load->library('waajo');
-		$owner_wa = ( ! empty($company->owner) && ! empty($company->owner->wa_number)) ? $company->owner->wa_number : '';
+		$owner_wa    = ( ! empty($company->owner) && ! empty($company->owner->wa_number)) ? $company->owner->wa_number : '';
+		$owner_email = ( ! empty($company->owner) && ! empty($company->owner->email)) ? $company->owner->email : '';
+		$device_wa   = $this->waajo->is_configured() ? $this->waajo->get_device() : '';
+		$target_wa   = ($owner_wa !== '') ? $owner_wa : $device_wa;
 
 		$data['company']        = $company;
 		$data['categories']     = $categories;
@@ -126,89 +131,15 @@ class Company extends CI_Controller
 		$data['row_name']       = $row_name;
 		$data['products']       = $products;
 		$data['category_id']    = $category_id;
+		$data['row_cat']        = $row_cat;
 		$data['sort']           = $sort;
-		$data['wa_configured']  = (bool) $this->waajo->is_configured();
-		$data['owner_wa']       = $owner_wa;
+		$data['target_wa']      = $target_wa;
+		$data['owner_email']    = $owner_email;
 		$data['allowed_sorts']  = $this->allowed_sorts;
 		$data['title']          = $company->name.' - Etalase';
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('company/cv', $data);
 		$this->load->view('templates/footer');
-	}
-
-	/**
-	 * Kirim pesan "Hubungi" ke pemilik perusahaan via API WAAJO.
-	 * Dipanggil via POST (AJAX) dari modal di halaman CV.
-	 */
-	public function contact()
-	{
-		$id = (int) $this->input->post('company_id');
-
-		$company = $this->Company_m->get_detail($id);
-
-		if ( ! $company || ! $company->is_active)
-		{
-			$this->output->set_content_type('application/json');
-			$this->output->set_output(json_encode(array('ok' => FALSE, 'message' => 'Perusahaan tidak ditemukan.')));
-			return;
-		}
-
-		$this->load->library('waajo');
-
-		if ( ! $this->waajo->is_configured())
-		{
-			$this->output->set_content_type('application/json');
-			$this->output->set_output(json_encode(array('ok' => FALSE, 'message' => 'Layanan WhatsApp belum tersedia. Mohon coba lagi nanti.')));
-			return;
-		}
-
-		$owner_wa = ( ! empty($company->owner) && ! empty($company->owner->wa_number)) ? $company->owner->wa_number : '';
-
-		if ($owner_wa === '')
-		{
-			$this->output->set_content_type('application/json');
-			$this->output->set_output(json_encode(array('ok' => FALSE, 'message' => 'Pemilik perusahaan belum memiliki nomor WhatsApp.')));
-			return;
-		}
-
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules('name', 'Nama', 'trim|required|max_length[100]');
-		$this->form_validation->set_rules('phone', 'Nomor WhatsApp', 'trim|required|max_length[20]');
-		$this->form_validation->set_rules('message', 'Pesan', 'trim|required|max_length[1000]');
-
-		$this->output->set_content_type('application/json');
-
-		if ($this->form_validation->run() === FALSE)
-		{
-			$this->output->set_output(json_encode(array('ok' => FALSE, 'message' => 'Mohon lengkapi nama, nomor WhatsApp, dan pesan.')));
-			return;
-		}
-
-		$name    = $this->input->post('name', TRUE);
-		$phone   = $this->input->post('phone', TRUE);
-		$message = $this->input->post('message', TRUE);
-
-		$text = '*Halo, saya tertarik dengan produk Anda di E-Katalog*'."\n\n"
-			.'Nama: '.$name."\n"
-			.'WhatsApp: '.$phone."\n"
-			.'Pesan: '.$message."\n\n"
-			.'- Dikirim dari '.base_url();
-
-		$result = $this->waajo->send_message($owner_wa, $text);
-
-		if ( ! $result)
-		{
-			$this->output->set_output(json_encode(array('ok' => FALSE, 'message' => 'Pengiriman pesan gagal. Coba lagi nanti.')));
-			return;
-		}
-
-		if ($result['status'] === 'failed')
-		{
-			$this->output->set_output(json_encode(array('ok' => FALSE, 'message' => 'Pesan gagal terkirim ke pemilik. Coba lagi nanti.')));
-			return;
-		}
-
-		$this->output->set_output(json_encode(array('ok' => TRUE, 'message' => 'Pesan berhasil dikirim ke pemilik.')));
 	}
 }

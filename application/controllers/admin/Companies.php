@@ -57,6 +57,7 @@ class Companies extends Admin_Controller
 			$data['item_id'] = $id;
 			$data['owners'] = $this->User_m->get_all_users();
 			$data['kbli_list'] = $this->Kbli_m->get_all();
+			$data['dsp_token'] = $this->dsp_token();
 
 			if ( ! $data['item'] && $id)
 			{
@@ -65,6 +66,11 @@ class Companies extends Admin_Controller
 			}
 
 			$this->render('admin/companies/form', $data);
+			return;
+		}
+
+		if ( ! $this->dsp_verify($id ? 'admin/companies/edit/'.$id : 'admin/companies/create'))
+		{
 			return;
 		}
 

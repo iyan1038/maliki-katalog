@@ -110,6 +110,7 @@ CREATE TABLE `products` (
   `long_description` TEXT NULL,
   `avg_rating` DECIMAL(2,1) NOT NULL DEFAULT 0.0,
   `rating_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `visit_count` INT UNSIGNED NOT NULL DEFAULT 0,
   `is_promo` TINYINT(1) NOT NULL DEFAULT 0,
   `promo_price` DECIMAL(15,2) NULL DEFAULT NULL,
   `is_featured` TINYINT(1) NOT NULL DEFAULT 0,
@@ -120,6 +121,7 @@ CREATE TABLE `products` (
   PRIMARY KEY (`id`),
   KEY `fk_products_company` (`company_id`),
   KEY `idx_products_rating` (`avg_rating`,`rating_count`),
+  KEY `idx_products_visit` (`visit_count`),
   KEY `idx_products_promo` (`is_promo`),
   CONSTRAINT `fk_products_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

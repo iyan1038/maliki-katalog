@@ -15,7 +15,7 @@ body.ek-dark .ek-product {
 body.ek-dark .ek-product-title { color: #e6e6e6; }
 
 body.ek-dark .ek-product-company,
-body.ek-dark .ek-product-rating { color: #9aa0a6; }
+body.ek-dark .ek-product-visit { color: #9aa0a6; }
 
 body.ek-dark .ek-filter-bar,
 body.ek-dark .card,
@@ -49,6 +49,16 @@ body.ek-dark .ek-product-oldprice { color: #7d858d; }
 body.ek-dark .text-muted { color: #9aa0a6 !important; }
 
 body.ek-dark .ek-fav-btn { background: rgba(27, 32, 38, .92); }
+
+/* Riwayat: tombol trash tetap merah (aksen bahaya) jadi tidak diubah di
+   dark mode; yang disesuaikan hanya latar checkbox dan warna label. */
+body.ek-dark .ek-hist-check-wrap { background: rgba(27, 32, 38, .92); }
+
+body.ek-dark .ek-history-checkall { color: #9aa0a6; }
+
+body.ek-dark .ek-hist-key-del-btn { color: #7d858d; }
+
+body.ek-dark .ek-hist-key-del-btn:hover { color: var(--ek-red); }
 
 body.ek-dark .form-control,
 body.ek-dark .form-select {
@@ -97,8 +107,8 @@ body.ek-dark .ek-cat-item {
 }
 
 body.ek-dark .ek-cat-item:hover {
-	border-color: #4f9e5e;
-	color: #8fd9a4;
+	border-color: #0b7af8;
+	color: #0b5fbe;
 }
 
 body.ek-dark .ek-cat-item.active {
@@ -114,17 +124,36 @@ body.ek-dark .ek-cat-arrow {
 }
 
 body.ek-dark .ek-cat-arrow:hover {
-	border-color: #4f9e5e;
-	color: #8fd9a4;
+	border-color: #0b7af8;
+	color: #0b5fbe;
 }
 
 body.ek-dark .ek-cat-nav::-webkit-scrollbar-thumb { background: #3a424b; }
 
 body.ek-dark .ek-scroll-row::-webkit-scrollbar-thumb { background: #3a424b; }
 
-body.ek-dark .ek-cv-logo { background-color: #1b2026; }
+body.ek-dark .ek-suggest {
+	background: #1b2026;
+	border-color: #2a2f36;
+	box-shadow: 0 8px 22px rgba(0, 0, 0, .45);
+}
 
-body.ek-dark .ek-company-logo { background-color: #1b2026; }
+body.ek-dark .ek-suggest-item { color: #e6e6e6; }
+
+body.ek-dark .ek-suggest-item .bi { color: #9aa0a6; }
+
+body.ek-dark .ek-suggest-item:hover,
+body.ek-dark .ek-suggest-item.is-active {
+	background: #232a31;
+	color: #7ab3ff;
+}
+
+body.ek-dark .ek-suggest-item:hover .bi,
+body.ek-dark .ek-suggest-item.is-active .bi { color: #7ab3ff; }
+
+body.ek-dark .ek-cv-logo { background-color: #ffffff; }
+
+body.ek-dark .ek-company-logo { background-color: #ffffff; }
 
 body.ek-dark .ek-card.modal-content { background-color: #1b2026; color: #e6e6e6; border-color: #2a2f36; }
 
@@ -183,4 +212,15 @@ body.ek-dark .ek-btn-search:hover {
 	background: #232a31;
 	color: #fff;
 	border-color: #c4c4c4;
+}
+
+body.ek-dark .ek-cat-arrow-banner {
+	background-color: #22282f;
+	border-color: #3a424b;
+	color: #e6e6e6;
+}
+
+body.ek-dark .ek-cat-arrow-banner:hover {
+	border-color: #0b7af8;
+	color: #0b5fbe;
 }

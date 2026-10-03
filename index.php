@@ -312,7 +312,8 @@ switch (ENVIRONMENT)
  */
 	if (function_exists('date_default_timezone_set'))
 	{
-		date_default_timezone_set('Asia/Jakarta');
+		date_default_timezone_set('UTC');
+		define('WIB_NOW', time() + 7 * 3600); // WIB = UTC + 7 jam
 	}
 
 /*

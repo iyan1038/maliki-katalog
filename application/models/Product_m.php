@@ -104,7 +104,7 @@ class Product_m extends CI_Model
 	 *
 	 * @param int    $company_id
 	 * @param int    $category_id NULL = semua
-	 * @param string $sort        recommended|promo|rating|newest|price_asc|price_desc
+	 * @param string $sort        recommended|promo|visit|newest|price_asc|price_desc
 	 * @param int    $limit
 	 * @param int    $offset
 	 */
@@ -125,16 +125,16 @@ class Product_m extends CI_Model
 			$this->db->where("EXISTS (SELECT 1 FROM product_kbli pk JOIN category_kbli ck ON ck.kbli_id = pk.kbli_id WHERE pk.product_id = products.id AND ck.category_id = ".(int) $category_id.")");
 		}
 
-		// Urutan mengikuti prioritas README: Promo > Rating > Terbaru (default).
+		// Urutan mengikuti prioritas: Promo > Kebiasaan user > Kunjungan > Terbaru > Views.
 		switch ($sort)
 		{
 			case 'promo':
 				$this->db->order_by('products.is_promo', 'DESC');
 				$this->db->order_by('products.promo_price', 'ASC');
 				break;
-			case 'rating':
-				$this->db->order_by('products.avg_rating', 'DESC');
-				$this->db->order_by('products.rating_count', 'DESC');
+			case 'visit':
+				$this->db->order_by('products.visit_count', 'DESC');
+				$this->db->order_by('products.created_at', 'DESC');
 				break;
 			case 'price_asc':
 				$this->db->order_by('products.price', 'ASC');
@@ -148,9 +148,9 @@ class Product_m extends CI_Model
 			case 'recommended':
 			default:
 				$this->db->order_by('products.is_promo', 'DESC');
-				$this->db->order_by('products.avg_rating', 'DESC');
-				$this->db->order_by('products.rating_count', 'DESC');
+				$this->db->order_by('products.visit_count', 'DESC');
 				$this->db->order_by('products.created_at', 'DESC');
+				$this->db->order_by('products.total_views', 'DESC');
 				break;
 		}
 
@@ -381,25 +381,59 @@ class Product_m extends CI_Model
 	 * @param string $search       Kata kunci (nama produk/perusahaan/deskripsi)
 	 * @param int    $platform_id  Filter marketplace tujuan (NULL = semua)
 	 * @param int    $category_id  Filter kategori produk berdasar KBLI (NULL = semua)
-	 * @param string $sort         recommended|promo|rating|newest|price_asc|price_desc
+	 * @param string $sort         recommended|promo|visit|newest|price_asc|price_desc
 	 * @param int    $limit
 	 * @param int    $offset
 	 */
 	public function public_query($search = '', $platform_id = NULL, $category_id = NULL, $sort = 'recommended', $limit = 20, $offset = 0, $user_id = NULL)
 	{
-		// Skor preferensi dihitung lebih dulu (men-reset query builder),
-		// sehingga tidak merusak state _public_base di bawah.
-		$this->load->library('sorter');
-		$scores   = array();
-		$adaptive = FALSE;
-
-		if ($sort === 'recommended' && $user_id)
-		{
-			$scores = $this->sorter->preference_scores($user_id);
-			$adaptive = $this->sorter->is_adaptive($scores);
-		}
+		// Skor preferensi WAJIB dihitung sebelum _public_base(), karena
+		// Behavior_m::get_kbli_scores() memanggil reset_query() yang akan
+		// menghapus FROM/JOIN/WHERE utama bila dijalankan belakangan.
+		$pref = $this->_preference($sort, $user_id);
 
 		$this->_public_base($search, $platform_id, $category_id);
+		$this->_apply_public_sort($sort, 'p', $pref);
+
+		return $this->db->limit($limit, $offset)->get()->result();
+	}
+
+	/**
+	 * Hitung skor preferensi user (kebiasaan) sebelum query utama disusun.
+	 *
+	 * PENTING: fungsi ini memanggil reset_query() di dalam
+	 * Behavior_m::get_kbli_scores(), jadi harus dijalankan SEBELUM _public_base().
+	 *
+	 * @param string $sort
+	 * @param int    $user_id
+	 * @return array array($scores, $adaptive)
+	 */
+	private function _preference($sort, $user_id = NULL)
+	{
+		if ($sort !== 'recommended' || ! $user_id)
+		{
+			return array(array(), FALSE);
+		}
+
+		$this->load->library('sorter');
+
+		$scores = $this->sorter->preference_scores($user_id);
+
+		return array($scores, $this->sorter->is_adaptive($scores));
+	}
+
+	/**
+	 * Terapkan urutan sesuai prioritas:
+	 * Promo > Kebiasaan user > Jumlah kunjungan > Produk terbaru > Views.
+	 *
+	 * @param string $sort
+	 * @param string $alias alias tabel produk ('p' atau 'products')
+	 * @param array  $pref  hasil _preference()
+	 */
+	private function _apply_public_sort($sort, $alias, array $pref = array())
+	{
+		$scores   = isset($pref[0]) ? $pref[0] : array();
+		$adaptive = ! empty($pref[1]);
 
 		if ($adaptive)
 		{
@@ -409,37 +443,35 @@ class Product_m extends CI_Model
 		switch ($sort)
 		{
 			case 'promo':
-				$this->db->order_by('p.is_promo', 'DESC');
-				$this->db->order_by('p.promo_price', 'ASC');
+				$this->db->order_by($alias.'.is_promo', 'DESC');
+				$this->db->order_by($alias.'.promo_price', 'ASC');
 				break;
-			case 'rating':
-				$this->db->order_by('p.avg_rating', 'DESC');
-				$this->db->order_by('p.rating_count', 'DESC');
+			case 'visit':
+				$this->db->order_by($alias.'.visit_count', 'DESC');
+				$this->db->order_by($alias.'.created_at', 'DESC');
 				break;
 			case 'newest':
-				$this->db->order_by('p.created_at', 'DESC');
+				$this->db->order_by($alias.'.created_at', 'DESC');
 				break;
 			case 'price_asc':
-				$this->db->order_by('p.price', 'ASC');
+				$this->db->order_by($alias.'.price', 'ASC');
 				break;
 			case 'price_desc':
-				$this->db->order_by('p.price', 'DESC');
+				$this->db->order_by($alias.'.price', 'DESC');
 				break;
 			case 'recommended':
 			default:
-				// Prioritas README: Promo > Kebiasaan user > Rating > Terbaru
-				$this->db->order_by('p.is_promo', 'DESC');
+				// Promo > Kebiasaan user > Kunjungan > Terbaru > Views
+				$this->db->order_by($alias.'.is_promo', 'DESC');
 				if ($adaptive)
 				{
 					$this->db->order_by('pref_score', 'DESC');
 				}
-				$this->db->order_by('p.avg_rating', 'DESC');
-				$this->db->order_by('p.rating_count', 'DESC');
-				$this->db->order_by('p.created_at', 'DESC');
+				$this->db->order_by($alias.'.visit_count', 'DESC');
+				$this->db->order_by($alias.'.created_at', 'DESC');
+				$this->db->order_by($alias.'.total_views', 'DESC');
 				break;
 		}
-
-		return $this->db->limit($limit, $offset)->get()->result();
 	}
 
 	/**
@@ -512,7 +544,17 @@ class Product_m extends CI_Model
 	}
 
 	/**
+	 * Naikkan jumlah kunjungan produk (dipakai replacement rating).
+	 * Berlaku untuk user login maupun anonim, jadi tidak bergantung user_id.
+	 */
+	public function increment_visits($id)
+	{
+		return $this->db->query('UPDATE products SET visit_count = visit_count + 1 WHERE id = ?', array($id));
+	}
+
+	/**
 	 * Produk terkait berdasarkan KBLI yang sama.
+	 * Urutan: Promo > Kunjungan > Terbaru > Views.
 	 */
 	public function get_related($product_id, $limit = 4)
 	{
@@ -542,8 +584,10 @@ class Product_m extends CI_Model
 			->where('c.is_active', 1)
 			->where('p.id !=', $product_id)
 			->group_by('p.id')
-			->order_by('p.avg_rating', 'DESC')
-			->order_by('p.rating_count', 'DESC')
+			->order_by('p.is_promo', 'DESC')
+			->order_by('p.visit_count', 'DESC')
+			->order_by('p.created_at', 'DESC')
+			->order_by('p.total_views', 'DESC')
 			->limit($limit)
 			->get()
 			->result();

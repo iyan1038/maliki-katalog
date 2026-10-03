@@ -50,6 +50,7 @@ class Platforms extends Admin_Controller
 			$data['form_errors'] = validation_errors();
 			$data['item'] = $id ? $this->Platform_m->get_by_id($id) : NULL;
 			$data['item_id'] = $id;
+			$data['dsp_token'] = $this->dsp_token();
 
 			if ( ! $data['item'] && $id)
 			{
@@ -58,6 +59,11 @@ class Platforms extends Admin_Controller
 			}
 
 			$this->render('admin/platforms/form', $data);
+			return;
+		}
+
+		if ( ! $this->dsp_verify($id ? 'admin/platforms/edit/'.$id : 'admin/platforms/create'))
+		{
 			return;
 		}
 

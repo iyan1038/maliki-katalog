@@ -2,6 +2,7 @@
 <div class="card border-0 shadow-sm" style="max-width: 640px;">
 	<div class="card-body">
 		<?php echo form_open_multipart($item_id ? 'admin/platforms/edit/'.$item_id : 'admin/platforms/create'); ?>
+			<input type="hidden" name="dsp_token" value="<?php echo isset($dsp_token) ? htmlspecialchars($dsp_token, ENT_QUOTES) : ''; ?>">
 			<div class="mb-3">
 				<label for="name" class="form-label">Nama Platform</label>
 				<input type="text" class="form-control" id="name" name="name" value="<?php echo set_value('name', $item ? $item->name : ''); ?>" required>

@@ -74,6 +74,7 @@ $route['auth/reset_password/(:any)'] = 'auth/reset_password/$1';
 $route['admin'] = 'admin/dashboard';
 $route['admin/dashboard'] = 'admin/dashboard';
 $route['admin/wa'] = 'admin/wa/index';
+$route['admin/wa/test_connection'] = 'admin/wa/test_connection';
 $route['admin/wa/send_promo'] = 'admin/wa/send_promo';
 $route['admin/wa/send_recommendation/(:num)'] = 'admin/wa/send_recommendation/$1';
 
@@ -87,7 +88,6 @@ $route['catalog/index']         = 'catalog/index';
 $route['product']               = 'catalog/index';
 $route['product/(:num)']        = 'product/index/$1';
 $route['company/cv/(:num)']     = 'company/cv/$1';
-$route['company/contact']       = 'company/contact';
 $route['company/(:num)']        = 'company/index/$1';
 
 /*
@@ -95,7 +95,6 @@ $route['company/(:num)']        = 'company/index/$1';
 | ROUTES MEMBER (Fase 4)
 | -------------------------------------------------------------------------
 */
-$route['rating/submit']                = 'rating/submit';
 $route['favorite']                     = 'favorite/index';
 $route['favorite/toggle']              = 'favorite/toggle';
 $route['profile']                      = 'profile/index';
@@ -103,6 +102,10 @@ $route['profile/update']               = 'profile/update';
 $route['profile/change_password']      = 'profile/change_password';
 $route['setting']                      = 'setting/index';
 $route['setting/toggle_dark_mode']     = 'setting/toggle_dark_mode';
+$route['history']                      = 'history/index';
+$route['history/clear']                = 'history/clear';
+$route['history/delete_items']         = 'history/delete_items';
+$route['history/delete_product/(:num)'] = 'history/delete_product/$1';
 
 /*
 | -------------------------------------------------------------------------

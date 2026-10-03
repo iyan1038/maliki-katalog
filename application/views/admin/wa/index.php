@@ -10,10 +10,20 @@
 <div class="row g-4">
 	<div class="col-lg-7">
 		<div class="card border-0 shadow-sm">
-			<div class="card-header bg-white">Kirim Promo ke Semua Member</div>
+			<div class="card-header bg-white d-flex justify-content-between align-items-center">
+				<span>Kirim Promo</span>
+				<a href="<?php echo site_url('admin/wa/test_connection'); ?>" class="btn btn-sm btn-outline-secondary">
+					<?php if ($configured): ?>
+						Uji Koneksi
+					<?php else: ?>
+						<span class="text-danger">CEK KONFIGURASI</span>
+					<?php endif; ?>
+				</a>
+			</div>
 			<div class="card-body">
-				<?php echo form_open('admin/wa/send_promo'); ?>
-					<p class="small text-muted">Pilih produk promo yang akan dikirim. Pesan dikirim ke semua member yang punya nomor WhatsApp.</p>
+				<?php echo form_open('admin/wa/send_promo', array('id' => 'wa_send_promo_form')); ?>
+					<input type="hidden" name="dsp_token" value="<?php echo isset($dsp_token) ? htmlspecialchars($dsp_token, ENT_QUOTES) : ''; ?>">
+					<p class="small text-muted">Pilih produk promo. Kirim ke semua member (tombol bawah) atau per member (tombol Kirim Promo di tabel member).</p>
 					<div class="border rounded p-3 mb-3" style="max-height: 200px; overflow-y: auto;">
 						<?php if (empty($promo_products)): ?>
 							<p class="text-muted mb-0">Belum ada produk promo.</p>
@@ -29,10 +39,9 @@
 							<?php endforeach; ?>
 						<?php endif; ?>
 					</div>
-					<button type="submit" class="btn ek-btn-marketplace">Kirim Promo</button>
-				<?php echo form_close(); ?>
+					<button type="submit" name="send_all" value="1" class="btn ek-btn-marketplace">Kirim Promo (Semua Member)</button>
+				</div>
 			</div>
-		</div>
 
 		<div class="card border-0 shadow-sm mt-4">
 			<div class="card-header bg-white">Member dengan Nomor WhatsApp</div>
@@ -54,7 +63,8 @@
 								<td><?php echo htmlspecialchars($m->name); ?></td>
 								<td><?php echo htmlspecialchars($m->wa_number); ?></td>
 								<td class="text-end">
-									<a href="<?php echo site_url('admin/wa/send_recommendation/'.$m->id); ?>" class="btn btn-sm btn-outline-primary">Kirim Rekomendasi</a>
+									<button type="submit" name="recommend" value="1" data-action="<?php echo site_url('admin/wa/send_recommendation/'.$m->id); ?>" class="btn btn-sm btn-outline-primary">Kirim Rekomendasi</button>
+									<button type="submit" name="user_id" value="<?php echo $m->id; ?>" class="btn btn-sm btn-outline-success">Kirim Promo</button>
 								</td>
 							</tr>
 							<?php endforeach; ?>
@@ -63,6 +73,7 @@
 				</table>
 			</div>
 		</div>
+		<?php echo form_close(); ?>
 	</div>
 
 	<div class="col-lg-5">
@@ -105,3 +116,18 @@
 		</div>
 	</div>
 </div>
+
+<script>
+(function () {
+	var form = document.getElementById('wa_send_promo_form');
+	if (!form) {
+		return;
+	}
+	form.addEventListener('submit', function (e) {
+		var btn = e.submitter || document.activeElement;
+		if (btn && btn.dataset.action) {
+			form.action = btn.dataset.action;
+		}
+	});
+})();
+</script>

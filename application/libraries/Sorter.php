@@ -6,8 +6,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Sorter Library
 |--------------------------------------------------------------------------
 | Menghitung skor preferensi user per kategori KBLI dan menyusun urutan
-| sortir adaptif katalog. Prioritas README: Promo > Kebiasaan user > Rating
-| > Produk terbaru.
+| sortir adaptif katalog. Prioritas katalog: Promo > Kebiasaan user >
+| Kunjungan > Produk terbaru > Views.
 */
 
 class Sorter

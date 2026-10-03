@@ -2,6 +2,7 @@
 <div class="card border-0 shadow-sm" style="max-width: 760px;">
 	<div class="card-body">
 		<?php echo form_open($item_id ? 'admin/categories/edit/'.$item_id : 'admin/categories/create'); ?>
+			<input type="hidden" name="dsp_token" value="<?php echo isset($dsp_token) ? htmlspecialchars($dsp_token, ENT_QUOTES) : ''; ?>">
 			<div class="row">
 				<div class="col-md-8">
 					<div class="mb-3">

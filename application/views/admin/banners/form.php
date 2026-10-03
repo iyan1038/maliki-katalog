@@ -2,6 +2,7 @@
 <div class="card border-0 shadow-sm" style="max-width: 640px;">
 	<div class="card-body">
 		<?php echo form_open_multipart($item_id ? 'admin/banners/edit/'.$item_id : 'admin/banners/create'); ?>
+			<input type="hidden" name="dsp_token" value="<?php echo isset($dsp_token) ? htmlspecialchars($dsp_token, ENT_QUOTES) : ''; ?>">
 			<div class="mb-3">
 				<label for="title" class="form-label">Judul Banner</label>
 				<input type="text" class="form-control" id="title" name="title" value="<?php echo set_value('title', $item ? $item->title : ''); ?>" required>

@@ -15,7 +15,7 @@ $ek_route = $this->router->class.'/'.$this->router->method;
 	<link rel="stylesheet" href="<?php echo base_url('assets/css/style.css?v='.@filemtime(FCPATH.'assets/css/style.css')); ?>">
 	<link rel="stylesheet" href="<?php echo base_url('assets/css/dark.css?v='.@filemtime(FCPATH.'assets/css/dark.css')); ?>">
 </head>
-<body class="ek-bg<?php echo $ek_dark ? ' ek-dark' : ''; ?>"<?php echo $ek_logged ? ' data-track-url="'.site_url('behavior/track').'"' : ''; ?>>
+<body class="ek-bg<?php echo $ek_dark ? ' ek-dark' : ''; ?>" data-track-url="<?php echo site_url('behavior/track'); ?>">
 	<header class="ek-topbar<?php echo empty($hide_search) ? '' : ' ek-header-auth'; ?>">
 		<div class="container py-3">
 			<div class="d-flex align-items-center gap-2 flex-nowrap">
@@ -25,15 +25,39 @@ $ek_route = $this->router->class.'/'.$this->router->method;
 					</a>
 				</div>
 				<?php if (empty($hide_search)): ?>
+				<?php
+				// Saran riwayat pencarian untuk user yang sudah login.
+				// Admin ikut dapat karena halaman ini juga dipakai untuk tes.
+				//
+				// CATATAN: di dalam view, $this adalah CI_Loader (bukan
+				// controller) — Loader::_ci_load() menyalin properti controller
+				// ke loader. Tapi CI_Loader::model() menaruh model di
+				// get_instance(). Jadi model WAJIB dipanggil lewat
+				// get_instance(), sama seperti $ek_user di baris bawah.
+				$ek_keywords = array();
+
+				if ($ek_logged)
+				{
+					$this->load->model('Behavior_m');
+					$ek_keywords = get_instance()->Behavior_m->get_recent_keywords((int) $this->session->userdata('user_id'), 8);
+				}
+				?>
 				<div class="ek-header-search">
-					<form action="<?php echo site_url('catalog'); ?>" method="get" class="d-flex">
+					<form action="<?php echo site_url('catalog'); ?>" method="get" class="d-flex" autocomplete="off">
 						<div class="ek-search flex-grow-1">
-							<input type="text" name="q" class="form-control" placeholder="Cari produk, perusahaan..." value="<?php echo isset($search) ? htmlspecialchars($search) : ''; ?>">
+							<input type="text" name="q" class="form-control" placeholder="Cari produk, perusahaan..." value="<?php echo isset($search) ? htmlspecialchars($search) : ''; ?>"<?php if ($ek_keywords): ?> role="combobox" aria-expanded="false" aria-controls="ekSearchSuggest" aria-autocomplete="list"<?php endif; ?>>
 							<?php if ( ! empty($platform_id)): ?>
 								<input type="hidden" name="platform" value="<?php echo (int) $platform_id; ?>">
 							<?php endif; ?>
 							<?php if ( ! empty($sort) && $sort !== 'recommended'): ?>
 								<input type="hidden" name="sort" value="<?php echo htmlspecialchars($sort); ?>">
+							<?php endif; ?>
+							<?php if ($ek_keywords): ?>
+								<ul class="ek-suggest" id="ekSearchSuggest" role="listbox" aria-label="Riwayat pencarian" hidden>
+									<?php foreach ($ek_keywords as $ek_i => $ek_kw): ?>
+										<li class="ek-suggest-item" id="ekSug<?php echo (int) $ek_i; ?>" role="option" aria-selected="false" data-kw="<?php echo htmlspecialchars($ek_kw->keyword); ?>"><i class="bi bi-clock-history" aria-hidden="true"></i><span class="text-truncate"><?php echo htmlspecialchars($ek_kw->keyword); ?></span></li>
+									<?php endforeach; ?>
+								</ul>
 							<?php endif; ?>
 						</div>
 						<button type="submit" class="btn ek-btn-search ms-2"><span aria-hidden="true">&#128269;</span> <span class="ek-search-txt">Cari</span></button>
@@ -78,6 +102,7 @@ $ek_route = $this->router->class.'/'.$this->router->method;
 									<?php if ($ek_role === 'member'): ?>
 										<li><a class="dropdown-item" href="<?php echo site_url('favorite'); ?>">Wishlist</a></li>
 									<?php endif; ?>
+									<li><a class="dropdown-item" href="<?php echo site_url('history'); ?>">Riwayat</a></li>
 									<li><a class="dropdown-item" href="<?php echo site_url('setting'); ?>">Pengaturan</a></li>
 									<?php if ($ek_role === 'admin'): ?>
 										<li><hr class="dropdown-divider"></li>

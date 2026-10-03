@@ -2,6 +2,7 @@
 <div class="card border-0 shadow-sm" style="max-width: 640px;">
 	<div class="card-body">
 		<?php echo form_open($item_id ? 'admin/settings/edit/'.$item_id : 'admin/settings/create'); ?>
+			<input type="hidden" name="dsp_token" value="<?php echo isset($dsp_token) ? htmlspecialchars($dsp_token, ENT_QUOTES) : ''; ?>">
 			<div class="mb-3">
 				<label for="key" class="form-label">Key</label>
 				<input type="text" class="form-control" id="key" name="key" value="<?php echo set_value('key', $item ? $item->key : ''); ?>" <?php echo $item_id ? 'readonly' : ''; ?> required>

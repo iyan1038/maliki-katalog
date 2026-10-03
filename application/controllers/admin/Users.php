@@ -59,6 +59,7 @@ class Users extends Admin_Controller
 			$data['form_errors'] = validation_errors();
 			$data['item'] = $id ? $this->User_m->get_by_id($id) : NULL;
 			$data['item_id'] = $id;
+			$data['dsp_token'] = $this->dsp_token();
 
 			if ( ! $data['item'] && $id)
 			{
@@ -67,6 +68,11 @@ class Users extends Admin_Controller
 			}
 
 			$this->render('admin/users/form', $data);
+			return;
+		}
+
+		if ( ! $this->dsp_verify($id ? 'admin/users/edit/'.$id : 'admin/users/create'))
+		{
 			return;
 		}
 

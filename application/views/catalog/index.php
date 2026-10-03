@@ -1,6 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 
 <?php if ( ! empty($banners_top)): ?>
+
 	<div class="mb-4">
 		<?php if (count($banners_top) > 1): ?>
 			<div id="ekTopCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -18,12 +19,12 @@
 						</div>
 					<?php endforeach; ?>
 				</div>
-				<button class="carousel-control-prev" type="button" data-bs-target="#ekTopCarousel" data-bs-slide="prev">
-					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<button class="carousel-control-prev " type="button" data-bs-target="#ekTopCarousel" data-bs-slide="prev">
+					<span class="ek-cat-arrow-banner ek-cat-arrow-banner-prev" aria-hidden="true">&#10094;</span>
 					<span class="visually-hidden">Sebelumnya</span>
 				</button>
 				<button class="carousel-control-next" type="button" data-bs-target="#ekTopCarousel" data-bs-slide="next">
-					<span class="carousel-control-next-icon" aria-hidden="true"></span>
+					<span class="ek-cat-arrow-banner ek-cat-arrow-banner-next" aria-hidden="true">&#10095;</span>
 					<span class="visually-hidden">Berikutnya</span>
 				</button>
 			</div>
@@ -70,10 +71,9 @@ $ek_sort_val = ($sort !== 'recommended') ? $sort : '';
 
 		<div class="ms-auto">
 			<select class="form-select form-select-sm ek-sort" onchange="if(this.value){window.location='<?php echo site_url('catalog').'?'.(($search !== '') ? 'q='.urlencode($search).'&' : '').(($platform_id) ? 'platform='.$platform_id.'&' : '').(($category_id) ? 'cat='.$category_id.'&' : ''); ?>sort='+this.value;}">
-				<option value="">Urutkan</option>
 				<option value="recommended" <?php echo $sort === 'recommended' ? 'selected' : ''; ?>>Rekomendasi</option>
 				<option value="promo" <?php echo $sort === 'promo' ? 'selected' : ''; ?>>Promo Terbaik</option>
-				<option value="rating" <?php echo $sort === 'rating' ? 'selected' : ''; ?>>Rating Tertinggi</option>
+				<option value="visit" <?php echo $sort === 'visit' ? 'selected' : ''; ?>>Kunjungan Terbanyak</option>
 				<option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Terbaru</option>
 				<option value="price_asc" <?php echo $sort === 'price_asc' ? 'selected' : ''; ?>>Harga Terendah</option>
 				<option value="price_desc" <?php echo $sort === 'price_desc' ? 'selected' : ''; ?>>Harga Tertinggi</option>
@@ -136,12 +136,37 @@ $ek_sort_val = ($sort !== 'recommended') ? $sort : '';
 				if ($category_id) { $qs .= '&cat='.$category_id; }
 				if ($sort !== 'recommended') { $qs .= '&sort='.$sort; }
 				$url = site_url('catalog');
-				for ($pg = 1; $pg <= $total_pages; $pg++):
+
+				$p_start = isset($pagination_start) ? (int) $pagination_start : 1;
+				$p_end   = isset($pagination_end) ? (int) $pagination_end : $total_pages;
 				?>
+				<li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+					<a class="page-link" href="<?php echo $url.'?page='.($page - 1).$qs; ?>">&laquo;</a>
+				</li>
+				<?php if ($p_start > 1): ?>
+					<li class="page-item <?php echo 1 === (int) $page ? 'active' : ''; ?>">
+						<a class="page-link" href="<?php echo $url.'?page=1'.$qs; ?>">1</a>
+					</li>
+					<?php if ($p_start > 2): ?>
+						<li class="page-item disabled"><span class="page-link">...</span></li>
+					<?php endif; ?>
+				<?php endif; ?>
+				<?php for ($pg = $p_start; $pg <= $p_end; $pg++): ?>
 					<li class="page-item <?php echo $pg === $page ? 'active' : ''; ?>">
 						<a class="page-link" href="<?php echo $url.'?page='.$pg.$qs; ?>"><?php echo $pg; ?></a>
 					</li>
 				<?php endfor; ?>
+				<?php if ($p_end < $total_pages): ?>
+					<?php if ($p_end < $total_pages - 1): ?>
+						<li class="page-item disabled"><span class="page-link">...</span></li>
+					<?php endif; ?>
+					<li class="page-item <?php echo $total_pages === $page ? 'active' : ''; ?>">
+						<a class="page-link" href="<?php echo $url.'?page='.$total_pages.$qs; ?>"><?php echo $total_pages; ?></a>
+					</li>
+				<?php endif; ?>
+				<li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
+					<a class="page-link" href="<?php echo $url.'?page='.($page + 1).$qs; ?>">&raquo;</a>
+				</li>
 			</ul>
 		</nav>
 	<?php endif; ?>

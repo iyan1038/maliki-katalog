@@ -36,11 +36,10 @@ $display_price = ($product->is_promo && $product->promo_price !== NULL) ? $produ
 			<!-- Info -->
 			<div class="col-12 col-md-7 col-lg-8">
 				<h4 class="mb-1"><?php echo htmlspecialchars($product->name); ?></h4>
-				<div class="ek-product-rating mb-2">
-					<span class="ek-star">&#9733;</span>
-					<?php echo number_format((float) $product->avg_rating, 1); ?>
-					<span class="text-muted">(<?php echo (int) $product->rating_count; ?> ulasan)</span>
-					<span class="text-muted ms-2"><?php echo (int) $product->total_views; ?> dilihat</span>
+				<div class="ek-product-visit mb-2">
+					<span class="ek-visit-icon" aria-hidden="true">&#128100;</span>
+					<?php echo number_format((int) $product->visit_count, 0, ',', '.'); ?> kunjungan
+					<span class="text-muted ms-2"><?php echo number_format((int) $product->total_views, 0, ',', '.'); ?> dilihat</span>
 				</div>
 
 				<div class="ek-detail-price mb-3">
@@ -81,7 +80,7 @@ $display_price = ($product->is_promo && $product->promo_price !== NULL) ? $produ
 				<?php if ( ! empty($visible_platforms)): ?>
 				<div class="border-top pt-3">
 					<div class="small text-muted mb-2">Beli di marketplace:</div>
-						<div class="d-flex flex-wrap gap-2">
+						<div class="d-flex flex-wrap gap-2 ek-marketplace-list">
 							<?php foreach ($visible_platforms as $pp): ?>
 						<?php $pp_target = trim($pp->product_url) !== '' ? $pp->product_url : $pp->url; ?>
 						<?php if ( ! empty($pp->logo)): ?>
@@ -143,68 +142,6 @@ $display_price = ($product->is_promo && $product->promo_price !== NULL) ? $produ
 	</div>
 </div>
 <?php endif; ?>
-
-<!-- Rating & ulasan -->
-<div class="card border-0 shadow-sm mt-4">
-	<div class="card-body">
-		<h5 class="mb-3">Rating &amp; Ulasan</h5>
-
-		<?php if ($is_member): ?>
-			<div class="border rounded p-3 mb-4">
-				<h6 class="mb-2"><?php echo $my_rating ? 'Ubah rating Anda' : 'Beri rating Anda'; ?></h6>
-				<?php echo form_open('rating/submit'); ?>
-					<input type="hidden" name="product_id" value="<?php echo $product->id; ?>">
-					<div class="mb-2">
-						<div class="ek-stars">
-							<?php for ($s = 5; $s >= 1; $s--): ?>
-								<input type="radio" name="rating" value="<?php echo $s; ?>" id="star<?php echo $s; ?>" <?php echo $my_rating && (int) $my_rating->rating === $s ? 'checked' : ''; ?>>
-								<label for="star<?php echo $s; ?>" class="ek-star-label">&#9733;</label>
-							<?php endfor; ?>
-						</div>
-					</div>
-					<div class="mb-2">
-						<textarea class="form-control" name="comment" rows="2" placeholder="Tulis komentar (opsional)..."><?php echo $my_rating ? htmlspecialchars($my_rating->comment) : ''; ?></textarea>
-					</div>
-					<button type="submit" class="btn ek-btn-marketplace">Kirim Rating</button>
-				<?php echo form_close(); ?>
-			</div>
-		<?php else: ?>
-			<div class="alert alert-info py-2 small">
-				<a href="<?php echo site_url('auth/login'); ?>">Login</a> sebagai member untuk memberi rating.
-			</div>
-		<?php endif; ?>
-
-		<?php if (empty($ratings)): ?>
-			<p class="text-muted mb-0">Belum ada ulasan.</p>
-		<?php else: ?>
-			<div class="list-group">
-				<?php foreach ($ratings as $rt): ?>
-					<div class="list-group-item list-group-item-action">
-						<div class="d-flex align-items-center gap-2">
-							<?php if ($rt->user_avatar): ?>
-								<img src="<?php echo htmlspecialchars($rt->user_avatar); ?>" alt="" height="28" width="28" class="rounded-circle">
-							<?php else: ?>
-								<img src="<?php echo base_url('assets/uploads/avatars/avatar1.png'); ?>" alt="" height="28" width="28" class="rounded-circle">
-							<?php endif; ?>
-							<div>
-								<div class="fw-semibold small"><?php echo htmlspecialchars($rt->user_name); ?></div>
-								<div class="ek-stars ek-stars-readonly">
-									<?php for ($s = 1; $s <= 5; $s++): ?>
-										<span class="<?php echo $s <= (int) $rt->rating ? 'ek-star-on' : 'ek-star-off'; ?>">&#9733;</span>
-									<?php endfor; ?>
-									<small class="text-muted ms-1"><?php echo date('d M Y', strtotime($rt->created_at)); ?></small>
-								</div>
-							</div>
-						</div>
-						<?php if ($rt->comment): ?>
-							<p class="mb-0 mt-2 small"><?php echo htmlspecialchars($rt->comment); ?></p>
-						<?php endif; ?>
-					</div>
-				<?php endforeach; ?>
-			</div>
-		<?php endif; ?>
-	</div>
-</div>
 
 <!-- Produk terkait -->
 <?php if ( ! empty($related)): ?>

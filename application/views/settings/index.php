@@ -6,13 +6,13 @@
 		<div class="card border-0 shadow-sm">
 			<div class="card-body">
 				<h6 class="fw-semibold mb-1">Tampilan</h6>
-				<p class="text-muted small">Mode gelap (dark mode) untuk kenyamanan di lingkungan redup.</p>
+				<p class="text-muted small">Dark mode untuk kenyamanan di tempat gelap.</p>
 
 				<?php echo form_open('setting/toggle_dark_mode', array('id' => 'darkFormSet')); ?>
 					<input type="hidden" name="dark_mode" id="darkValueSet" value="<?php echo $dark_mode ? 0 : 1; ?>">
 					<div class="form-check form-switch">
 						<input class="form-check-input" type="checkbox" role="switch" id="darkSwitch" <?php echo $dark_mode ? 'checked' : ''; ?>>
-						<label class="form-check-label" for="darkSwitch">Aktifkan mode gelap</label>
+						<label class="form-check-label" for="darkSwitch">Dark Mode</label>
 					</div>
 				<?php echo form_close(); ?>
 			</div>
@@ -64,12 +64,16 @@
 
 <script>
 	(function () {
-		var sw = document.getElementById('darkSwitch');
-		if (sw) {
+		function bindSwitch(switchId, valueId, formId) {
+			var sw = document.getElementById(switchId);
+			if (!sw) return;
 			sw.addEventListener('change', function () {
-				document.getElementById('darkValueSet').value = sw.checked ? 1 : 0;
-				document.getElementById('darkFormSet').submit();
+				document.getElementById(valueId).value = sw.checked ? 1 : 0;
+				document.getElementById(formId).submit();
 			});
 		}
+
+		bindSwitch('darkSwitch', 'darkValueSet', 'darkFormSet');
+		bindSwitch('recentRowSwitch', 'recentRowValueSet', 'recentRowFormSet');
 	})();
 </script>

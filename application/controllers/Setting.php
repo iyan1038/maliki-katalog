@@ -5,8 +5,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |--------------------------------------------------------------------------
 | Setting Controller
 |--------------------------------------------------------------------------
-| Menu setting aplikasi: toggle dark mode, ringkasan akun & profil,
-| serta info profil perusahaan (jika user memiliki perusahaan).
+| Menu setting aplikasi: toggle dark mode & baris produk terakhir di katalog,
+| ringkasan akun & profil, serta info profil perusahaan (jika user memiliki
+| perusahaan).
 */
 
 class Setting extends User_Controller
@@ -42,7 +43,6 @@ class Setting extends User_Controller
 
 		$this->User_m->set_dark_mode($user_id, $value);
 		$this->session->set_userdata('dark_mode', $value);
-		$this->session->set_flashdata('success', 'Tampilan gelap '.($value ? 'diaktifkan' : 'dinonaktifkan').'.');
 
 		redirect('setting');
 	}

@@ -11,7 +11,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Catalog extends CI_Controller
 {
-	protected $allowed_sorts = array('recommended', 'promo', 'rating', 'newest', 'price_asc', 'price_desc');
+	protected $allowed_sorts = array('recommended', 'promo', 'visit', 'newest', 'price_asc', 'price_desc');
 
 	public function __construct()
 	{

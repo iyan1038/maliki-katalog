@@ -2,6 +2,7 @@
 <div class="card border-0 shadow-sm" style="max-width: 640px;">
 	<div class="card-body">
 		<?php echo form_open($item_id ? 'admin/kbli/edit/'.$item_id : 'admin/kbli/create'); ?>
+			<input type="hidden" name="dsp_token" value="<?php echo isset($dsp_token) ? htmlspecialchars($dsp_token, ENT_QUOTES) : ''; ?>">
 			<div class="mb-3">
 				<label for="code" class="form-label">Kode KBLI</label>
 				<input type="text" class="form-control" id="code" name="code" value="<?php echo set_value('code', $item ? $item->code : ''); ?>" required>

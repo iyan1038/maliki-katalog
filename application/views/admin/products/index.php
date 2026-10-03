@@ -28,7 +28,7 @@
 					<th>Perusahaan</th>
 					<th class="text-end">Harga</th>
 					<th class="text-center">Promo</th>
-					<th class="text-center">Rating</th>
+					<th class="text-center">Kunjungan</th>
 					<th class="text-center">Status</th>
 					<th class="text-end" style="width: 160px;">Aksi</th>
 				</tr>
@@ -51,7 +51,7 @@
 							<?php endif; ?>
 						</td>
 						<td class="text-center"><?php echo $item->is_promo ? '<span class="badge text-bg-danger">Promo</span>' : '-'; ?></td>
-						<td class="text-center"><?php echo number_format($item->avg_rating, 1); ?> (<?php echo $item->rating_count; ?>)</td>
+						<td class="text-center"><?php echo number_format((int) $item->visit_count, 0, ',', '.'); ?></td>
 						<td class="text-center"><?php echo $item->is_active ? '<span class="badge text-bg-success">Aktif</span>' : '<span class="badge text-bg-secondary">Nonaktif</span>'; ?></td>
 						<td class="text-end">
 							<a href="<?php echo site_url('admin/products/edit/'.$item->id); ?>" class="btn btn-sm btn-outline-secondary">Edit</a>

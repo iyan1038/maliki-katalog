@@ -191,7 +191,7 @@ Saat pengujian Fase 4, kredensial member tidak sengaja rusak karena menjalankan 
 - Menu sidebar admin + route `admin/wa/*`.
 
 ### Catatan Teknis & Keputusan
-1. **API WAAJO belum diverifikasi** (kredensial masih `YOUR_WAAJO_API_KEY`). Saat ini setiap pengiriman tercatat `status = failed` + response `kredensial belum dikonfigurasi` — alur end-to-end (compose → attempt → log) sudah terbukti jalan. Setelah mengisi `application/config/waajo.php`, sesuaikan endpoint/header bila format akun WAAJO berbeda.
+1. **API WAAJO sudah diverifikasi** (Postman collection *"WhatsappV2Public"*): base `https://api.waajo.id`, kirim teks `POST /go-omni-v2/public/whatsapp/send-text`, header `apikey`, body `{recipient_number, text, check_session}`. Respons sukses = HTTP 200 + `{"data":{"id":"..."},"msg":"OK","status":200}`. Kredensial sebelumnya menunjuk `https://app.waajo.com/api/v1` yang tidak ada di DNS (NXDOMAIN) → semua pengiriman gagal (`failed`) — sudah diperbaiki ke `api.waajo.id` (terverifikasi: apikey diterima, `is_online` saat ini mengembalikan `status 406 / msg "Offline"`). **Syarat operasional**: nomor device harus terhubung (`Online`) di dashboard Waajo (scan QR) sebelum pesan bisa terkirim. Juga ditambahkan tombol **Uji Koneksi** di `admin/wa` (`is_online`) dan fallback TLS bila CA bundle XAMPP hilang.
 2. **Bug saat uji**: `$this->Product_m->where(...)->get('products')` memanggil method `where` di model (tidak ada) → `Call to undefined method Product_m::where()`. Fix: pakai `$this->db` untuk query chaining (properti `db`), bukan method model. Catatan umum CI3: model hanya memproksi **properti** `db` via `__get`, bukan method.
 3. **Target pengiriman**: hanya member dengan `wa_number` terisi (`User_m::get_members_with_wa()`). Member 2 diberi nomor saat pengujian lalu dikembalikan `NULL`.
 4. **Format nomor WA**: `send_message()` memfilter non-digit, sehingga format "62xxxx" / "08xxxx" sama-sama berubah jadi digit-only. Konversi "08"→"62" belum otomatis — perlu dipastikan user mengisi format internasional.
@@ -240,4 +240,92 @@ Saat pengujian Fase 4, kredensial member tidak sengaja rusak karena menjalankan 
 
 
 
+
+
+---
+
+## Penambahan — Kunjungan (pengganti rating)
+
+### Yang Dikerjakan
+- **Kunjungan produk menggantikan rating**: kolom baru `products.visit_count`.
+  - `Behavior_m::register_visit()` menaikkan `visit_count` untuk **anonim maupun member**; baris `user_behaviors` hanya ditulis bila user login (kolomnya `NOT NULL`), sehingga skor kebiasaan KBLI tetap utuh.
+  - Throttle session `ek_visit_seen`: satu kunjungan per produk+platform+user per 30 menit (dibatasi 200 entri).
+  - `header.php` kini selalu menyertakan `data-track-url` (dulu hanya untuk user login), jadi `app.js` (`sendBeacon`) bekerja untuk anonim juga.
+- **Sorting**: `rating` → `visit` ("Kunjungan Tertinggi") di `Catalog`, `Company::cv`, dan `Product_m` (`public_query`, `get_by_company`, `get_related`). Prioritas `recommended` menjadi **promo > kebiasaan user > kunjungan > terbaru > views**. `Wa::send_recommendation()` ikut karena memakai `public_query(..., 'recommended')`.
+- **Rating dihapus** dari kode: `Rating.php`, `Rating_m.php`, route `rating/submit`, blok ulasan di `product/detail.php`, kolom Rating di `admin/products`, serta CSS `ek-stars`/`ek-star`. Kolom `avg_rating`/`rating_count` dan tabel `ratings` **dibiarkan** (tidak destruktif) tetapi tidak lagi dipakai.
+- **Dokumentasi**: README diperbarui (fitur, DFD, struktur folder, prioritas sortir) + blok SQL upgrade untuk DB lama.
+
+### Catatan Teknis & Keputusan
+1. **Reset query builder** (`catatan.md` Fase 5): `Behavior_m::get_kbli_scores()` memanggil `$this->db->reset_query()`. Karena itu `Product_m` menghitung skor preferensi lewat `_preference()` **sebelum** `_public_base()` menyusun query, lalu skor itu diteruskan ke `_apply_public_sort()`. Menghitungnya di dalam `_apply_public_sort()` akan menghapus FROM/JOIN/WHERE utama.
+2. **`product_card.php` pakai `$product->visit_count`** — kolom ini otomatis terbawa karena query memakai `p.*`/`products.*`. Kalau suatu query memilih kolom eksplisit, `visit_count` harus ditambahkan manual.
+3. **Bug pre-existing yang ikut diperbaiki**: `Company.php` punya deklarasi `protected $allowed_sorts` menempel di baris yang sama dengan penutup `__construct()`.
+
+### Catatan Pengujian (diverifikasi)
+- `php -l` bersih untuk seluruh file yang diubah.
+
+---
+
+## Penambahan — Riwayat (produk + pencarian)
+
+### Yang Dikerjakan
+- **Halaman Riwayat dipecah dua tab** (`history?tab=produk` / `history?tab=pencarian`), server-side lewat query string, tanpa JS:
+  - `History::index()` memvalidasi `?tab=` terhadap whitelist `produk`/`pencarian` (default `produk`).
+  - **Hanya tab aktif yang di-query** — tab `pencarian` tidak menyentuh `get_recent_products()` dan sebaliknya.
+  - `is_empty` dihitung per tab, jadi empty state tiap tab jujur menggambarkan isinya sendiri.
+  - Tabs memakai `nav nav-tabs` Bootstrap 5.3 → otomatis responsif, URL bisa di-share, tahan refresh.
+- **Perbaikan inkonsistensi filter**: `Behavior_m::get_recent_products()` kini `WHERE p.is_active = 1 AND c.is_active = 1`.
+- **Saran riwayat di form search** (`templates/header.php`): 8 kata kunci terakhir milik user, diambil server-side lalu difilter live di client. Muncul saat input di-fokus, pilih dengan klik atau `↑/↓` + `Enter`, tutup dengan `Esc` atau klik luar.
+- **`/history` dibuka untuk admin**: `History` kini extends `User_Controller` (login cukup), bukan `Member_Controller`, supaya mudah dites. Menu "Riwayat" di `header.php` sudah tampil untuk semua user login, jadi kini konsisten.
+
+### Catatan Teknis & Keputusan
+1. **Skema tidak berubah sama sekali.** Tabel `users`, `user_behaviors`, `search_logs`, dan `products` tetap apa adanya. Untuk DB lama yang sempat menjalankan kolom `show_recent_row`, jalankan `ALTER TABLE users DROP COLUMN show_recent_row;`.
+2. **`c.is_active = 1` memang belum ada sebelumnya** — ini bukan soal produk nonaktif. `WHERE p.is_active = 1` sudah ada, jadi produk yang dinonaktifkan admin **tidak pernah** muncul di riwayat. Yang bocor cuma **perusahaan** nonaktif: produknya lolos karena `products.is_active` masih 1 per-item, padahal sudah hilang dari grid katalog (`Product_m::_public_base`), pencarian, dan etalase (`get_by_company`).
+3. **Badge kata kunci** diganti dari `text-bg-light border text-dark` ke `text-bg-secondary border`. Kombinasi lama memaksa teks gelap; di dark mode `text-bg-light` berubah jadi latar gelap sehingga kontrasnya rusak. `text-bg-secondary` aman di kedua tema. Ditambah `hover` memakai `var(--ek-green-dark)`.
+4. **Saran di form search diambil inline di `header.php`**, bukan AJAX, mengikuti pola yang sudah dipakai view itu sendiri (`header.php` memang memanggil `$this->load->model('User_m')` untuk avatar). `get_recent_keywords()` adalah `GROUP BY` kecil dengan indeks `fk_search_logs_user`, dan `Behavior_m` sudah mengembalikan `array()` kalau `$user_id` kosong, jadi pemanggilnya tidak perlu penjaga tambahan. Kalau nanti volume `search_logs` tumbuh besar dan query ini mulai terasa, dibangun ulang jadi endpoint yang dipanggil saat fokus.
+5. **Enter tidak pernah dialihkan selama tidak ada opsi aktif** — jadi perilaku submit biasa tetap utuh. `mousedown` di daftar di-`preventDefault()` supaya input tidak kehilangan fokus sebelum `click` mendarat.
+6. **Cache-buster `app.js` di-`footer.php` di-bump `?v=2` → `?v=3`.** Wajib: CSS pakai `@filemtime` sehingga otomatis bust, tapi JS tidak.
+7. **Saran hanya untuk user login.** `search_logs.user_id` bisa NULL untuk pencarian anonim, jadi riwayat anonim tidak bisa diambil ulang per-pengunjung tanpa skema tambahan. Admin sengaja ikut dapat karena halaman ini dipakai untuk tes.
+8. **Baris "Baru Dilihat" di katalog sudah dibatalkan** atas permintaan pemilik: blok view, query, switch `setting`, route, setter model, session, dan kolom `show_recent_row` semuanya ikut dibuang. Yang **tidak** ikut dibuang: CSS dasar `.ek-scroll-row` (`style.css`) + aturan scrollbar di `dark.css` — keduanya masih dipakai baris rekomendasi etalase di `company/cv.php`. `get_recent_products()` juga tetap, masih dipakai tab Produk di `/history`.
+9. **Penting — model tidak bisa dipanggil `$this->...` dari dalam view.** `CI_Loader::_ci_load()` menyalin seluruh properti controller ke loader (`system/core/Loader.php:927-930`), jadi `$this` di dalam view adalah `CI_Loader`, bukan controller. Tapi `CI_Loader::model()` menaruh objek model di `get_instance()` (`:273`). Akibatnya `$this->load->model('X_m')` berhasil, lalu `$this->X_m` bernilai `null` → fatal `Call to a member function ...() on null`. Yang benar: `$this->load->model('X_m');` lalu pakai `get_instance()->X_m->...`. Pola ini sudah ada di `templates/header.php` untuk `User_m` (avatar), hanya `Behavior_m` sempat ditulis dengan `$this->`. `$this->session` dan `$this->router` tetap aman karena ikut tersalin sebagai objek.
+10. **Bug di atas tidak cuma di `/setting`.** Semua halaman frontend yang punya kolom search ikut kena karena view yang sama.
+11. **Menu "Riwayat" di dropdown user tadinya ter-gate `$ek_role === 'member'`.** Guard itu membungkus `Wishlist` dan `Riwayat` sekaligus, jadi admin — yang `/history`-nya sudah dibuka — tetap tidak melihat tombolnya di mana pun. `Riwayat` sekarang dipindah keluar dari guard itu, `Wishlist` tetap di dalamnya karena `Favorite` masih `Member_Controller`. Ini penyebab sebenarnya "tombol riwayat tidak muncul di admin", bukan ketiadaan kotak pencarian di panel admin.
+12. **Panel admin sengaja tidak diberi kotak pencarian atau dropdown.** Percobaan pertama salah mendiagnosis dan menambahkan search form ke navbar admin; semuanya sudah dicabut lagi. Layout admin memang tidak punya form search, dan tidak ada fitur `app.js` (`#ekCatNav`, `.ek-market-link`, `data-track-url`) yang terpakai di sana, jadi `app.js` dan `bootstrap-icons` juga tidak perlu dimuat di layout admin. Admin menguji lewat sidebar **Lihat Situs** → dropdown user → **Riwayat**.
+
+### Catatan Pengujian
+- `php -l` bersih untuk 12 file PHP yang diubah, dan `node --check` bersih untuk `assets/js/app.js`. `git diff --check` tanpa error whitespace. Pengujian fungsional di browser belum dilakukan.
+
+---
+
+## Penambahan — Riwayat: hapus terpilih & ikon trash
+
+### Yang Dikerjakan
+- **Tiga cara menghapus riwayat**, semuanya hanya menyentuh `user_behaviors` + `search_logs` milik user tersebut:
+  1. **Ikon tong sampah** (merah) di pojok kanan atas tiap card produk — hapus 1 produk (`history/delete_product/{id}`). Di tab Pencarian ada ikon yang sama di sebelah tiap badge kata kunci (hapus 1 kata kunci).
+  2. **Pilih Beberapa** → mode centang: `?select=1`, ikon trash digantikan checkbox di slot yang sama, lalu **Hapus Terpilih (n)** menghapus semua item yang dicentang (`history/delete_items`). Di mode centang tombolnya berganti jadi **Batal** di slot yang sama persis.
+  3. **Hapus Semua** (dulu "Hapus Riwayat") — `history/clear`, tidak berubah.
+- **Responsif** sesuai README butir 3: grid riwayat diselaraskan ke `row-cols-2 row-cols-md-3 row-cols-lg-5` (sama katalog & etalase), trash/checkbox membesar mengikuti aturan `.ek-fav-btn` yang sudah ada, badge kata kunci boleh terpotong (ellipsis) di layar sempit, dan tombol toolbar **tidak dipecah/direntangkan** di mobile — hanya font + padding-nya dikecilkan.
+- `product_card.php` dapat **varian kartu**: `$card_variant = 'history'` mengganti tombol wishlist (heart) dengan trash/checkbox. Tanpa varian, kartu dipakai persis seperti sebelumnya (katalog, produk terkait, favorit) — heart tidak hilang dari mana pun kecuali `/history`.
+
+### Catatan Teknis & Keputusan
+1. **Mode centang diputuskan di server, bukan di JS.** `History::index()` membaca `?select=1` ke `$data['select_mode']`, jadi checkbox, tombol, dan form-nya sudah ada di HTML. Alasannya: hapus terpilih harus tetap bisa dipakai kalau `app.js` gagal dimuat. JS hanya menambah "pilih semua" + penghitung `(n)` + disabling tombol saat kosong. Tombol masuk/keluar mode karena itu **link biasa** (`?select=1` ↔ tanpa `select`), bukan toggle JS — sama seperti tab riwayat yang juga server-side.
+2. **Checkbox di luar form, ditautkan lewat atribut `form="..."`.** Form hapus-terpilih ada di toolbar, sementara tiap kartu punya form trash sendiri, dan HTML melarang form bersarang. Jadi checkbox diletakkan di dalam `.ek-product-img` dengan `form="ekHistoryBulk"`. Konsekuensi untuk JS: `querySelector('[form=...]')` tidak dipakai, checkbox dicari lewat **`form.elements`** — elemen yang terasosiasi lewat atribut `form` memang ikut masuk `form.elements`.
+3. **Checkbox & trash saling menggantikan di server, bukan lewat CSS.** Server hanya merender salah satu (`$card_select ? checkbox : trash`), jadi tidak ada elemen `display:none` yang memakan slot dan tidak perlu status kelas CSS. Varian yang sama dipakai di badge kata kunci.
+4. **Pola "saling ganti" yang sama diterapkan ke tombol `Pilih Beberapa` ↔ `Batal`.** Sebelumnya itu satu elemen yang teksnya berubah (`aria-pressed` ikut berubah) — dari luar terlihat tetap satu tombol yang sama. Sekarang jadi dua cabang `if/else` terpisah, persis seperti trash/checkbox: `Pilih Beberapa` = `btn-outline-secondary`, `Batal` = `btn-secondary` (solid, supaya jelas itu jalan keluar). `aria-pressed` dihapus karena bukan lagi tombol toggle, melainkan dua link biasa. Konsekuensi sampingnya bagus: form bulk + tombol **Hapus Terpilih** sekarang hanya dirender di mode pilih, jadi tidak ada lagi tombol `disabled` yang hanya jadi tempat di mode normal — dan urutan slot di toolbar tidak bergeser.
+5. **Toolbar mobile tetap satu baris, bukan di-stack full-width.** Versi pertama memakai `flex-direction: column` + `.ek-history-form { width: 100% }` + `.btn { flex: 1 1 auto }` — hasilnya tombol jadi besar dan berbaris vertikal, jadi posisinya berubah. Permintaan pemilik: posisi tombol tetap, ukuran mengecil. Sekarang yang dikecilkan hanya `font-size`/padding (`.72rem`/`.25rem .5rem` di ≤768px, `.68rem`/`.2rem .4rem` di ≤360px), `flex-wrap: wrap` di `.ek-history-head` dipakai sebagai cadangan saja, dan di ≤576px teks "semua" pada label **Pilih Semua** disembunyikan (`.ek-checkall-txt`) sehingga yang tersisa `☑ (24)` — jumlah item justru lebih penting daripada kata "semua", dan baris tidak perlu pecah karena teks. `.ek-history-head h5` juga diturunkan ke `1.05rem` supaya judul tidak memakan tempat.
+6. **Satu endpoint untuk dua keperluan.** `History::delete_items()` melayani hapus terpilih (banyak `items[]`) maupun hapus satu kata kunci (satu `items[]`) — tidak perlu endpoint terpisah. `$scope` divalidasi terhadap `$allowed_tabs` yang sama dan sekaligus menentukan tab tujuan redirect, jadi tidak ada input mentah yang dipakai untuk redirect.
+7. **Nilai POST tidak pernah dipakai mentah.** `Behavior_m::delete_items()` mengubah produk ke `int`, memotong kata kunci ke 150 char (sesuai `search_logs.keyword VARCHAR(150)`), membuang duplikat lewat array key, dan membatasi 100 item per request (`MAX_BULK_ITEMS`) supaya satu POST tidak bisa mengosongkan seluruh riwayat tanpa sengaja. Jumlah yang dilaporkan di flash adalah jumlah **item** yang dicentang, bukan jumlah baris yang terhapus (satu kata kunci bisa punya beberapa baris `search_logs`).
+8. **`is_favorited` + `Favorite_m` dibuang dari `History`.** Heart tidak dirender di `/history` lagi, jadi query `get_favorited_ids()` cuma jadi satu query sia-sia per halaman. Halaman **favorit** tetap mengisi `is_favorited` sendiri.
+9. **Cache-buster `app.js` di-bump `?v=3` → `?v=4`** (CSS tetap otomatis lewat `@filemtime`).
+10. **Ikon trash memakai Bootstrap Icons** (`bi-trash`) agar sama dengan `bi-clock-history` di saran pencarian, bukan entity HTML seperti heart `&#9829;`. Latar merahnya diambil dari `var(--ek-red)` yang sudah ada, jadi warna konsisten dengan badge PROMO.
+
+### Catatan Pengujian (belum diverifikasi di browser)
+- `php -l` bersih untuk 6 file PHP yang diubah; `node --check` bersih untuk `assets/js/app.js`; `git diff --check` tanpa error whitespace.
+- Perlu diuji manual di XAMPP:
+  - Member & admin → `/history`: ikon trash di card produk, hapus 1 produk (flash muncul, kartu hilang, `user_behaviors` untuk produk itu habis).
+  - "Pilih Beberapa" → checkbox muncul menggantikan trash, tombol berganti jadi "Batal" (solid) di slot yang sama, "Pilih Semua" + "Hapus Terpilih" muncul; "Pilih Semua (24)" mencentang semua; counter ikut berubah; "Hapus Terpilih" menghapus yang dicentang saja; "Batal" kembali ke trash **dan** tombol "Hapus Terpilih" hilang lagi (tidak ada tombol mati).
+  - Tab Pencarian: trash per badge + hapus terpilih kata kunci.
+  - **Matikan JavaScript**: mode centang + Hapus Terpilih tetap bisa dipakai.
+  - Guard: GET ke `history/delete_items` / `history/delete_product/1` → redirect; POST tanpa token CSRF → 403; submit tanpa centang → flash "Centang minimal satu item…".
+  - `favorites` dan `products.visit_count` tetap utuh setelah semua jenis hapus.
+  - Tampilan di 360px / 375px / 768px / desktop, plus dark mode: tombol toolbar tetap urut & sebaris (tidak vertikal, tidak full-width), label "Pilih Semua" jadi `☑ (24)` di ≤576px.
 

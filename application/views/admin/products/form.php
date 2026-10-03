@@ -29,6 +29,7 @@ $remaining_slots = max(0, $max_images - $existing_images);
 <div class="card border-0 shadow-sm">
 	<div class="card-body">
 		<?php echo form_open_multipart($item_id ? 'admin/products/edit/'.$item_id : 'admin/products/create'); ?>
+			<input type="hidden" name="dsp_token" value="<?php echo isset($dsp_token) ? htmlspecialchars($dsp_token, ENT_QUOTES) : ''; ?>">
 			<div class="row">
 				<div class="col-md-6">
 					<div class="mb-3">

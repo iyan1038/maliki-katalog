@@ -49,6 +49,7 @@ class Kbli extends Admin_Controller
 			$data['form_errors'] = validation_errors();
 			$data['item'] = $id ? $this->Kbli_m->get_by_id($id) : NULL;
 			$data['item_id'] = $id;
+			$data['dsp_token'] = $this->dsp_token();
 
 			if ( ! $data['item'] && $id)
 			{
@@ -57,6 +58,11 @@ class Kbli extends Admin_Controller
 			}
 
 			$this->render('admin/kbli/form', $data);
+			return;
+		}
+
+		if ( ! $this->dsp_verify($id ? 'admin/kbli/edit/'.$id : 'admin/kbli/create'))
+		{
 			return;
 		}
 

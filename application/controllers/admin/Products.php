@@ -88,6 +88,7 @@ class Products extends Admin_Controller
 			$data['kbli_list'] = $this->Kbli_m->get_all();
 			$data['platforms'] = $this->Platform_m->get_all();
 			$data['max_images'] = 4;
+			$data['dsp_token'] = $this->dsp_token();
 
 			if ( ! $data['item'] && $id)
 			{
@@ -96,6 +97,11 @@ class Products extends Admin_Controller
 			}
 
 			$this->render('admin/products/form', $data);
+			return;
+		}
+
+		if ( ! $this->dsp_verify($id ? 'admin/products/edit/'.$id : 'admin/products/create'))
+		{
 			return;
 		}
 

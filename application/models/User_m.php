@@ -196,7 +196,7 @@ class User_m extends CI_Model
 		$this->db->insert('password_resets', array(
 			'email'      => $email,
 			'token'      => $token,
-			'expires_at' => date('Y-m-d H:i:s', time() + ($expiry_minutes * 60))
+			'expires_at' => date('Y-m-d H:i:s', WIB_NOW + ($expiry_minutes * 60))
 		));
 
 		return $token;
@@ -209,7 +209,7 @@ class User_m extends CI_Model
 	{
 		return $this->db
 			->where('token', $token)
-			->where('expires_at >', date('Y-m-d H:i:s'))
+			->where('expires_at >', date('Y-m-d H:i:s', WIB_NOW))
 			->order_by('id', 'DESC')
 			->limit(1)
 			->get('password_resets')

@@ -57,6 +57,11 @@ if ($ek_toast_flash_error)
 		for (var i = 0; i < messages.length; i++) {
 			if (messages[i]) ektAddToast(messages[i], 'danger');
 		}
+
+		if (document.cookie.indexOf('ek_spam_notice=1') !== -1) {
+			ektAddToast('Jangan spam klik!', 'danger');
+			document.cookie = 'ek_spam_notice=; Max-Age=0; path=/';
+		}
 	});
 })();
 </script>

@@ -57,6 +57,7 @@ class Settings extends Admin_Controller
 			$data['form_errors'] = validation_errors();
 			$data['item'] = $id ? $this->Settings_m->get_by_id($id) : NULL;
 			$data['item_id'] = $id;
+			$data['dsp_token'] = $this->dsp_token();
 
 			if ( ! $data['item'] && $id)
 			{
@@ -65,6 +66,11 @@ class Settings extends Admin_Controller
 			}
 
 			$this->render('admin/settings/form', $data);
+			return;
+		}
+
+		if ( ! $this->dsp_verify($id ? 'admin/settings/edit/'.$id : 'admin/settings/create'))
+		{
 			return;
 		}
 

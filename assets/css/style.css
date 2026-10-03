@@ -5,7 +5,7 @@
 :root {
 	--ek-green: #0b7af8;
 	--ek-green-dark: #0b5fbe;
-	--ek-red: #ee4d2d;
+	--ek-red: #ff2e04;
 	--ek-price: #03ac0e;
 	--ek-bg: #f5f6f8;
 }
@@ -122,10 +122,31 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .ek-banner {
 	width: 100%;
 	height: auto;
-	max-height: 220px;
+	max-height: 440px;
 	object-fit: cover;
 	border-radius: 8px;
 }
+.ek-cat-arrow-banner {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 48px;
+	height: 48px;
+	border: 1px solid #e3e6e8;
+	border-radius: 50%;
+	background: #fff;
+	color: #333;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	z-index: 2;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+	cursor: pointer;
+	transition: color .15s ease, border-color .15s ease;
+}
+.ek-cat-arrow-banner-prev { left: 9px; }
+.ek-cat-arrow-banner-next { right: 9px; }
 
 /* ---------- Filter bar ---------- */
 .ek-filter-bar {
@@ -296,6 +317,53 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
 .ek-scroll-row::-webkit-scrollbar-thumb { background: #d3d7db; border-radius: 999px; }
 
+/* ---------- Saran riwayat pencarian di form search ---------- */
+
+.ek-suggest {
+	position: absolute;
+	top: calc(100% + .3rem);
+	left: 0;
+	right: 0;
+	z-index: 1050;
+	margin: 0;
+	padding: .25rem;
+	list-style: none;
+	background: #fff;
+	border: 1px solid #e5e9ec;
+	border-radius: 10px;
+	box-shadow: 0 8px 22px rgba(16, 24, 40, .10);
+	max-height: 248px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+.ek-suggest[hidden] { display: none; }
+
+.ek-suggest-item {
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	padding: .4rem .55rem;
+	border-radius: 7px;
+	font-size: .875rem;
+	color: #1f2d3d;
+	cursor: pointer;
+}
+
+/* [hidden] perlu ditegaskan karena .ek-suggest-item memakai display:flex. */
+.ek-suggest-item[hidden] { display: none; }
+
+.ek-suggest-item .bi { color: #9aa0a6; font-size: .9em; }
+
+.ek-suggest-item:hover,
+.ek-suggest-item.is-active {
+	background: #eef4ff;
+	color: #0d5bd7;
+}
+
+.ek-suggest-item:hover .bi,
+.ek-suggest-item.is-active .bi { color: #0d5bd7; }
+
 /* ---------- Product card ---------- */
 
 .ek-product:hover {
@@ -438,9 +506,9 @@ html, body { max-width: 100%; overflow-x: hidden; }
 
 .ek-product-oldprice { color: #999; font-weight: 400; font-size: .78rem; }
 
-.ek-product-rating { font-size: .78rem; color: #555; }
+.ek-product-visit { font-size: .78rem; color: #555; }
 
-.ek-star { color: #ffb800; }
+.ek-visit-icon { margin-right: 2px; }
 
 .ek-product-company {
 	font-size: .75rem;
@@ -449,6 +517,155 @@ html, body { max-width: 100%; overflow-x: hidden; }
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+.ek-product-note {
+	font-size: .72rem;
+	color: #888;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.ek-history-keyword {
+	max-width: 260px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	text-decoration: none;
+	font-weight: 500;
+	transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+}
+
+.ek-history-keyword:hover {
+	color: #fff;
+	background-color: var(--ek-green-dark);
+	border-color: var(--ek-green-dark) !important;
+}
+
+/* ---------- Riwayat: hapus terpilih ---------- */
+
+/* Toolbar: judul di kiri, group tombol hapus di kanan. */
+.ek-history-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .5rem 1rem;
+	flex-wrap: wrap;
+}
+
+.ek-history-actions {
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	flex-wrap: wrap;
+}
+
+/* Form di dalam toolbar harus inline-flex, kalau tidak tiap form jadi
+   blok penuh dan memecah baris group tombol. */
+.ek-history-form {
+	display: inline-flex;
+	align-items: center;
+	gap: .5rem;
+	margin: 0;
+	flex-wrap: wrap;
+}
+
+.ek-history-checkall {
+	display: inline-flex;
+	align-items: center;
+	gap: .35rem;
+	margin: 0;
+	font-size: .8rem;
+	color: #555;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.ek-history-checkall input[type="checkbox"],
+.ek-hist-check,
+.ek-hist-key-check {
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	flex: 0 0 auto;
+	cursor: pointer;
+	accent-color: var(--ek-green);
+}
+
+.ek-bulk-count { font-variant-numeric: tabular-nums; }
+
+/* Checkbox mode "pilih beberapa": satu slot pojok kanan atas gambar,
+   persis di tempat ikon trash berada saat mode normal. */
+.ek-hist-check-wrap {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	z-index: 2;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(255, 255, 255, .92);
+	border-radius: 50%;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+	cursor: pointer;
+}
+
+/* Ikon trash kartu riwayat: varian merah dari tombol wishlist. */
+.ek-hist-trash {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	z-index: 2;
+	margin: 0;
+}
+
+.ek-hist-trash-btn {
+	background: var(--ek-red);
+	color: #fff;
+	font-size: .95rem;
+}
+
+.ek-hist-trash-btn:hover,
+.ek-hist-trash-btn:focus,
+.ek-hist-trash-btn:focus-visible {
+	background: #cf2301;
+	color: #fff;
+}
+
+/* Badge kata kunci: checkbox + link + trash dalam satu baris. */
+.ek-hist-key {
+	display: inline-flex;
+	align-items: center;
+	gap: .35rem;
+	max-width: 100%;
+	min-width: 0;
+}
+
+/* Flex item butuh min-width:0 supaya badge boleh ikut terpotong. */
+.ek-hist-key .ek-history-keyword { min-width: 0; }
+
+.ek-hist-key-del {
+	margin: 0;
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+}
+
+.ek-hist-key-del-btn {
+	background: transparent;
+	border: 0;
+	padding: 0;
+	line-height: 1;
+	color: #a8adb2;
+	font-size: .85rem;
+	cursor: pointer;
+}
+
+.ek-hist-key-del-btn:hover,
+.ek-hist-key-del-btn:focus-visible { color: var(--ek-red); }
 
 .ek-btn-marketplace {
 	background: var(--ek-green);
@@ -517,29 +734,6 @@ html, body { max-width: 100%; overflow-x: hidden; }
 	color: var(--ek-red);
 }
 
-/* ---------- Rating stars ---------- */
-.ek-stars { display: inline-flex; flex-direction: row-reverse; }
-
-.ek-stars input[type="radio"] { display: none; }
-
-.ek-star-label {
-	font-size: 1.6rem;
-	color: #ccc;
-	cursor: pointer;
-	padding: 0 .05rem;
-	transition: color .1s;
-}
-
-.ek-stars input[type="radio"]:checked ~ label,
-.ek-star-label:hover,
-.ek-star-label:hover ~ .ek-star-label { color: #ffb800; }
-
-.ek-stars-readonly { flex-direction: row; }
-
-.ek-star-on { color: #ffb800; }
-
-.ek-star-off { color: #d6d6d6; }
-
 .ek-avatar {
 	display: inline-flex;
 	align-items: center;
@@ -556,7 +750,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 /* ---------- Cards umum ---------- */
 .card.shadow-sm { box-shadow: 0 1px 3px rgba(0, 0, 0, .08) !important; }
 
-main.container { min-height: 70vh; }
+main.container { min-height: 82vh; }
 
 /* ---------- Mobile (perangkat kecil) ---------- */
 @media (max-width: 767.98px) {
@@ -564,11 +758,47 @@ main.container { min-height: 70vh; }
 	.ek-filter-bar .ms-auto { width: 100%; }
 	.ek-filter-bar .form-select { width: 100%; }
 	.ek-fav-btn { width: 36px; height: 36px; font-size: 1.05rem; }
+	.ek-marketplace-list .ek-market-link {
+		flex: 1 1 calc(50% - .25rem);
+		min-width: 0;
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: .5rem .65rem;
+	}
+	.ek-marketplace-list .ek-market-logo img {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 30px;
+		object-fit: contain;
+	}
 	.ek-cat-arrow { display: none; }
+	.ek-cat-arrow-banner {width: 24px; height: 24px; }
+	.ek-cat-arrow-banner-prev { left: 6px; }
+	.ek-cat-arrow-banner-next { right: 6px; }
+	.carousel-indicators { display: none; }
 	.ek-cv-logo { width: 64px; height: 64px; }
 	.ek-cv-profile-head { gap: .5rem; }
-	.ek-btn-contact { padding: .45rem 1.05rem; font-size: .88rem; }
+	.ek-btn-contact { padding: .32rem .75rem; font-size: .78rem; }
+	.ek-btn-contact .bi { font-size: .9em; }
 	.ek-company-logo { width: 48px; height: 48px; }
+	/* Toolbar riwayat tetap satu baris seperti di desktop: posisinya tidak
+	   berubah, hanya ukuran font/padding tombol yang dikecilkan. */
+	.ek-history-head { gap: .35rem; }
+	.ek-history-head h5 { font-size: 1.05rem; }
+	.ek-history-actions { gap: .3rem; }
+	.ek-history-actions .btn { font-size: .72rem; padding: .25rem .5rem; }
+	.ek-history-checkall { font-size: .72rem; }
+	/* Teks "semua" disembunyikan di layar kecil, checkbox + jumlah tetap
+	   terlihat, jadi baris tidak perlu pecah. */
+	.ek-checkall-txt { display: none; }
+	.ek-hist-check-wrap { width: 36px; height: 36px; }
+	.ek-history-checkall input[type="checkbox"],
+	.ek-hist-check,
+	.ek-hist-key-check { width: 18px; height: 18px; }
+	.ek-history-keyword { max-width: 100%; }
 	.ek-cv-btn {
 		top: 50%;
 		right: .75rem;
@@ -584,7 +814,9 @@ main.container { min-height: 70vh; }
 @media (max-width: 575.98px) {
 	.ek-cv-logo { width: 52px; height: 52px; }
 	.ek-company-logo { width: 40px; height: 40px; }
-	.ek-btn-contact { padding: .4rem .9rem; font-size: .82rem; }
+	.ek-cv-profile-head { flex-wrap: wrap; }
+	.ek-btn-contact { padding: .28rem .6rem; font-size: .72rem; }
+	.ek-btn-contact .bi { font-size: .9em; }
 }
 
 @media (max-width: 575.98px) {
@@ -602,3 +834,10 @@ main.container { min-height: 70vh; }
 	.ek-nav-avatar-fallback { font-size: .9rem; }
 	.ek-navlink { font-size: .8rem; padding: .2rem .4rem; }
 }
+
+@media (max-width: 359.98px) {
+	.ek-marketplace-list .ek-market-link { flex-basis: 100%; }
+	.ek-history-actions .btn { font-size: .68rem; padding: .2rem .4rem; }
+	.ek-history-checkall { font-size: .68rem; }
+}
+

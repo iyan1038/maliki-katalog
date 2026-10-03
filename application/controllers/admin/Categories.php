@@ -82,6 +82,7 @@ class Categories extends Admin_Controller
 			$data['item_id'] = $id;
 			$data['kbli_list'] = $this->Kbli_m->get_all();
 			$data['selected_kbli'] = $id ? $this->Category_m->get_kbli_ids($id) : array();
+			$data['dsp_token'] = $this->dsp_token();
 
 			if ( ! $data['item'] && $id)
 			{
@@ -90,6 +91,11 @@ class Categories extends Admin_Controller
 			}
 
 			$this->render('admin/categories/form', $data);
+			return;
+		}
+
+		if ( ! $this->dsp_verify($id ? 'admin/categories/edit/'.$id : 'admin/categories/create'))
+		{
 			return;
 		}
 

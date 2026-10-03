@@ -5,8 +5,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |--------------------------------------------------------------------------
 | Product Controller
 |--------------------------------------------------------------------------
-| Halaman detail produk: galeri gambar, info, harga, tombol redirect
-| ke marketplace, rating (Fase 4), favorit, dan produk terkait.
+| Halaman detail produk: galeri gambar, info, harga, jumlah kunjungan,
+| tombol redirect ke marketplace, favorit, dan produk terkait.
 */
 
 class Product extends CI_Controller
@@ -17,7 +17,6 @@ class Product extends CI_Controller
 		$this->load->model('Product_m');
 		$this->load->model('Platform_m');
 		$this->load->model('Company_m');
-		$this->load->model('Rating_m');
 		$this->load->model('Favorite_m');
 	}
 
@@ -56,8 +55,6 @@ class Product extends CI_Controller
 		$data['title']         = $product->name;
 		$data['is_member']     = $is_member;
 		$data['is_favorited']  = $is_member && $this->Favorite_m->is_favorited($user_id, $id);
-		$data['my_rating']     = $is_member ? $this->Rating_m->get_by_product_user($id, $user_id) : NULL;
-		$data['ratings']       = $this->Rating_m->get_by_product($id);
 
 		$cat = $this->Product_m->get_first_category($id);
 		$data['cv_category_id'] = $cat ? (int) $cat->id : NULL;
