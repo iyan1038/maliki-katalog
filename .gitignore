@@ -1,3 +1,15 @@
 # Log files (CodeIgniter)
 application/logs/*.php
 !application/logs/index.html
+
+# File upload (data runtime, bukan source)
+# Nama file diubah encrypt_name tiap upload sehingga re-upload memicu diff
+# ratusan file dan menambah pack repo. Folder di server diisi lewat copy
+# (lihat catatan.md "Checklist Deploy") dan dicadangkan tools/backup.php.
+# Placeholder yang dirujuk kode tetap dilacak: git add -f assets/uploads/avatars/avatar1.png
+assets/uploads/**
+
+# Clone vendor yang tidak sengaja ikut ter-track sebagai gitlink (nested repo)
+application/vendor_bak/google/auth/
+application/vendor_bak/psr/cache/
+application/vendor_bak/ralouphie.bak/getallheaders/
